@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { fetchRecords, createRecord } from "@/api/records/route";
+import { fetchRecords, createRecord, deleteRecord } from "@/api/records/route";
 import AddRecord from "@/app/admin/components/AddRecord";
 
 import Image from "next/image";
@@ -27,15 +27,10 @@ export default function RecordsPage() {
   }
 
   const handleDeleteRecord = async (id: number) => {
-    const res = await fetch(`/api/records?id=${id}`, { method: "DELETE" });
-
-    if (!res.ok) {
-      console.error(await res.text());
-      throw new Error("Failed to delete record");
-    }
-
+    await deleteRecord(id);
     setRecords(prev => prev.filter(record => record.id !== id));
   };
+
 
 
 
