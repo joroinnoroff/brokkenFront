@@ -1,4 +1,4 @@
-const API_URL = "https://brokken-back.vercel.app/api"
+const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 export async function fetchRecords() {
   const res = await fetch(`${API_URL}/records`);
