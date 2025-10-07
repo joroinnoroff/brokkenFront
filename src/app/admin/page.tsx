@@ -27,17 +27,16 @@ export default function RecordsPage() {
   }
 
   const handleDeleteRecord = async (id: number) => {
-    const res = await fetch(`/api/records?id=${id}`, {
-      method: "DELETE",
-    });
+    const res = await fetch(`/api/records?id=${id}`, { method: "DELETE" });
 
     if (!res.ok) {
-      console.error(await res.text()); // see backend error
+      console.error(await res.text());
       throw new Error("Failed to delete record");
     }
 
     setRecords(prev => prev.filter(record => record.id !== id));
   };
+
 
 
 
