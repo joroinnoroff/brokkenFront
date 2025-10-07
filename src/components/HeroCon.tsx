@@ -85,10 +85,10 @@ export default function HeroCon() {
               </p>
             </div>
             <div className="ctas mt-20  flex gap-20 mr-auto">
-              <Link href={"/Records"}>
+              <Link href={"/records"}>
                 Records
               </Link>
-              <Link href={"/Records"}>
+              <Link href={"/events"}>
                 Events
               </Link>
             </div>
