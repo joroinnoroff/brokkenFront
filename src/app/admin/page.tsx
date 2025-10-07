@@ -2,8 +2,16 @@
 import { useEffect, useState } from "react";
 import { fetchRecords, createRecord } from "@/api/records/route";
 
+interface RecordType {
+  id?: number;
+  name: string;
+  image: string;
+  release_date: string;
+  price: number;
+  description: string;
+}
 export default function RecordsPage() {
-  const [records, setRecords] = useState<any[]>([]);
+  const [records, setRecords] = useState<RecordType[]>([]);
 
   useEffect(() => {
     fetchRecords().then(setRecords);

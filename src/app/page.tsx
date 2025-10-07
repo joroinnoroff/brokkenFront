@@ -1,7 +1,6 @@
 
 import HeroCon from "@/components/HeroCon";
-import Image from "next/image";
-import { motion } from 'framer-motion'
+
 export default function Home() {
   return (
     <div className=" min-h-screen pt-20 w-full">
