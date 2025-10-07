@@ -1,20 +1,9 @@
-"use client"
-import { fetchRecords } from '@/api/records/route';
-import React, { useEffect, useState } from 'react'
-interface RecordType {
-  id?: number;
-  name: string;
-  image: string;
-  release_date: string;
-  price: number;
-  description: string;
-}
-export default function page() {
-  const [records, setRecords] = useState<RecordType[]>([]);
 
-  useEffect(() => {
-    fetchRecords().then(setRecords);
-  }, []);
+import AllRecords from '@/components/AllRecords'
+import React from 'react'
+
+export default function page() {
+
   return (
     <div className='min-h-screen w-full'>
       <div className='px-8 pt-20'>
@@ -22,11 +11,7 @@ export default function page() {
 
 
         <div className="container">
-          {records.map((record, index) => (
-            <div key={index}>
-              <p>{record.name}</p>
-            </div>
-          ))}
+          <AllRecords />
         </div>
 
       </div>
