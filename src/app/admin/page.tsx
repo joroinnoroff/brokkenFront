@@ -1,6 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import { fetchRecords, createRecord } from "@/api/records/route";
+import AddRecord from "@/app/admin/components/AddRecord";
+
+import Image from "next/image";
+
 
 interface RecordType {
   id?: number;
@@ -17,24 +21,52 @@ export default function RecordsPage() {
     fetchRecords().then(setRecords);
   }, []);
 
-  const handleAdd = async () => {
-    const newRecord = {
-      name: "Test Record",
-      image: "https://example.com/image.jpg",
-      release_date: new Date().toISOString(),
-      price: 199,
-      description: "Test description",
-    };
-    const res = await createRecord(newRecord);
-    setRecords(prev => [...prev, res]);
+  const handleNewRecord = async (record: Omit<RecordType, "id">) => {
+    const res = await createRecord(record);
+    setRecords(prev => [...prev, res])
+  }
+
+  const handleDeleteRecord = async (id: number) => {
+    const res = await fetch(`/api/records?id=${id}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) {
+      console.error(await res.text()); // see backend error
+      throw new Error("Failed to delete record");
+    }
+
+    setRecords(prev => prev.filter(record => record.id !== id));
   };
+
+
+
+
+
 
   return (
     <div>
-      <button onClick={handleAdd}>Add Record</button>
+      <AddRecord onSubmit={handleNewRecord} />
       <ul>
         {records.map(r => (
-          <li key={r.id}>{r.name} - ${r.price}</li>
+          <li key={r.id}>
+            <div className="relative h-12 w-12">
+              {r?.image ? (
+                <Image src={r.image} alt={r.name} fill />
+              ) : (
+                <div className="h-12 w-12 bg-gray-200" />
+              )}
+
+            </div>
+            {r.name} - {r.price} kr
+
+            <button
+              className="ml-2 text-red-500"
+              onClick={() => handleDeleteRecord(r.id!)}
+            >
+              Delete
+            </button>
+          </li>
         ))}
       </ul>
     </div>

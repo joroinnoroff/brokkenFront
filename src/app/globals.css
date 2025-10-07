@@ -112,6 +112,9 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+.fuzzy-wrapper {
+  text-transform: uppercase
+}
 
 
 
