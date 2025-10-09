@@ -4,6 +4,7 @@ import FuzzyText from "./FuzzyText";
 import gsap from "gsap";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
+import Vinyl from "./Vinyl";
 
 export default function HeroCon() {
   const [fontSize, setFontSize] = useState(200);
@@ -48,7 +49,7 @@ export default function HeroCon() {
       className=""
     >
       <div className="  w-full flex-col min-h-full">
-        {[...Array(9)].map((_, i) => (
+        {[...Array(1)].map((_, i) => (
           <div key={i} className=" uppercase">
             <FuzzyText
 
@@ -70,7 +71,7 @@ export default function HeroCon() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1, ease: "easeInOut" }}>
-            <p className="mt-8 opacity-80 font-light max-w-lg">2nd hand Vinyl & Listening Café
+            <p className="mt-8 opacity-80 font-light max-w-lg overflow-visible">2nd hand Vinyl & Listening Café
               - Electronic, experimental, funky, punky, jazzy, classy, hard & tasty
               … and more!
             </p>
@@ -92,8 +93,10 @@ export default function HeroCon() {
                 Events
               </Link>
             </div>
+
           </motion.div>
         )}
+
       </AnimatePresence>
     </div>
   );
