@@ -25,7 +25,7 @@ export async function createRecord(record: RecordType): Promise<RecordType> {
   return res.json();
 }
 
-export async function deleteRecord(id: number): Promise<any> {
+export async function deleteRecord(id: number): Promise<RecordType> {
   const res = await fetch(`${API_PATH}?id=${id}`, { method: "DELETE" });
   if (!res.ok) throw new Error("Failed to delete record");
   return res.json();
