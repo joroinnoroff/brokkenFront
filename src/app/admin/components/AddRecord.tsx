@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -6,14 +6,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
+
+interface RecordData {
+  name: string;
+  image: string;
+  release_date: string;
+  price: number;
+  description: string;
+}
 
 interface AddRecordProps {
-  onSubmit: (record: { name: string; image: string; release_date: string; price: number, description: string }) => void;
+  onSubmit: (record: RecordData) => void;
 }
 
 export default function AddRecord({ onSubmit }: AddRecordProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<RecordData>({
     name: "",
     image: "",
     release_date: "",
@@ -22,11 +30,13 @@ export default function AddRecord({ onSubmit }: AddRecordProps) {
   });
   const [uploading, setUploading] = useState(false);
 
+  // handle text/number/date changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: name === "price" ? Number(value) : value }));
   };
 
+  // handle file upload
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length) return;
     const file = e.target.files[0];
@@ -40,10 +50,14 @@ export default function AddRecord({ onSubmit }: AddRecordProps) {
         method: "POST",
         body: form,
       });
+
+      if (!res.ok) throw new Error("Upload failed");
+
       const data = await res.json();
       setFormData(prev => ({ ...prev, image: data.url })); // save S3 URL
     } catch (err) {
-      console.error("Upload failed:", err);
+      console.error(err);
+      alert("Image upload failed!");
     } finally {
       setUploading(false);
     }
@@ -55,8 +69,8 @@ export default function AddRecord({ onSubmit }: AddRecordProps) {
       return;
     }
     onSubmit(formData);
-    setFormData({ name: "", image: "", release_date: "", price: 0, description: "" })
-  }
+    setFormData({ name: "", image: "", release_date: "", price: 0, description: "" });
+  };
 
   return (
     <Dialog>
@@ -75,9 +89,11 @@ export default function AddRecord({ onSubmit }: AddRecordProps) {
           <input type="date" name="release_date" value={formData.release_date} onChange={handleChange} />
           <input type="number" name="price" value={formData.price} onChange={handleChange} placeholder="Price" />
           <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description" />
-          <button onClick={handleSubmit} className="mt-2 bg-indigo-600 text-white px-4 py-2 rounded">Add Record</button>
+          <button onClick={handleSubmit} className="mt-2 bg-indigo-600 text-white px-4 py-2 rounded">
+            Add Record
+          </button>
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
