@@ -36,7 +36,7 @@ export default function AddRecord({ onSubmit }: AddRecordProps) {
     form.append("file", file);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}uploads`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/uploads`, {
         method: "POST",
         body: form,
       });
