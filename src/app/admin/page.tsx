@@ -22,21 +22,23 @@ export default function RecordsPage() {
   };
 
   return (
-    <div>
-      <AddRecord onSubmit={handleNewRecord} />
-      <ul>
-        {records.map(r => (
-          <li key={r.id}>
-            <div className="relative h-12 w-12">
-              {r.image ? <Image src={r.image} alt={r.name} fill /> : <div className="h-12 w-12 bg-gray-200" />}
-            </div>
-            {r.name} - {r.price} kr
-            <button className="ml-2 text-red-500" onClick={() => handleDeleteRecord(r.id!)}>
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+    <div className="min-h-screen w-full">
+      <div className="px-8 pt-20">
+        <AddRecord onSubmit={handleNewRecord} />
+        <ul>
+          {records.map(r => (
+            <li key={r.id}>
+              <div className="relative h-12 w-12">
+                {r.image ? <Image src={r.image} alt={r.name} fill /> : <div className="h-12 w-12 bg-gray-200" />}
+              </div>
+              {r.name} - {r.price} kr
+              <button className="ml-2 text-red-500" onClick={() => handleDeleteRecord(r.id!)}>
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
