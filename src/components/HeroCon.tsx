@@ -4,7 +4,7 @@ import FuzzyText from "./FuzzyText";
 import gsap from "gsap";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import Vinyl from "./Vinyl";
+
 
 export default function HeroCon() {
   const [fontSize, setFontSize] = useState(200);
@@ -93,6 +93,9 @@ export default function HeroCon() {
                 Events
               </Link>
             </div>
+
+
+
 
           </motion.div>
         )}

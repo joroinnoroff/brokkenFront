@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "example.com",
+        hostname: 'brokken-s3.s3.amazonaws.com',
         port: "",
         pathname: "/**", // allow all paths
       },
