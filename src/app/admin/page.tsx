@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { fetchRecords, createRecord, deleteRecord, RecordType } from "@/lib/api";
+import { fetchRecords, createRecord, deleteRecord, RecordType } from "../api/records/route";
 import AddRecord from "@/app/admin/components/AddRecord";
 import Image from "next/image";
 
