@@ -1,16 +1,15 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   images: {
-    domains: ["npsus.com"],
     remotePatterns: [
       {
         protocol: "https",
         hostname: "brokken-s3.s3.eu-north-1.amazonaws.com",
-        pathname: "/**",
+        port: "",
+        pathname: "/**", // allow all paths under S3
       },
     ],
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
