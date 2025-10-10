@@ -7,7 +7,7 @@ export default function Home() {
     <div className=" min-h-screen pt-20 w-full">
       <main className=" ">
         <div className=" w-full ">
-          <div className="absolute right-0 md:right-10 lg:right-52 xl:right-80 z-50 mix-blend-exclusion text-white px-0 lg:px-3">
+          <div className="absolute right-0 md:right-10 lg:right-52 xl:right-80 z-50 mix-blend-exclusion text-white px-0 pr-3 lg:pr-0 lg:px-3">
             <HeroCon />
           </div>
 
