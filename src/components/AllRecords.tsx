@@ -1,5 +1,5 @@
 "use client"
-import { fetchRecords } from '@/api/records/route';
+import { fetchRecords } from '@/app/api/records/route';
 import React, { useEffect, useState } from 'react'
 interface RecordType {
   id?: number;
