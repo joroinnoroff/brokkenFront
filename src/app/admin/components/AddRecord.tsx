@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import {
   Dialog,
@@ -30,13 +31,11 @@ export default function AddRecord({ onSubmit }: AddRecordProps) {
   });
   const [uploading, setUploading] = useState(false);
 
-  // handle text/number/date changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: name === "price" ? Number(value) : value }));
   };
 
-  // handle file upload
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length) return;
     const file = e.target.files[0];
@@ -50,11 +49,9 @@ export default function AddRecord({ onSubmit }: AddRecordProps) {
         method: "POST",
         body: form,
       });
-
       if (!res.ok) throw new Error("Upload failed");
-
       const data = await res.json();
-      setFormData(prev => ({ ...prev, image: data.url })); // save S3 URL
+      setFormData(prev => ({ ...prev, image: data.url }));
     } catch (err) {
       console.error(err);
       alert("Image upload failed!");

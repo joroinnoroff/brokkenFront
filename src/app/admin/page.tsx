@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { fetchRecords, createRecord, deleteRecord, RecordType } from "../api/records/route";
+import { fetchRecords, createRecord, deleteRecord, RecordType } from "@/lib/api";
 import AddRecord from "@/app/admin/components/AddRecord";
 import Image from "next/image";
 
@@ -22,23 +22,24 @@ export default function RecordsPage() {
   };
 
   return (
-    <div className="min-h-screen w-full">
-      <div className="px-8 pt-20">
-        <AddRecord onSubmit={handleNewRecord} />
-        <ul>
-          {records.map(r => (
-            <li key={r.id}>
-              <div className="relative h-12 w-12">
-                {r.image ? <Image src={r.image} alt={r.name} fill /> : <div className="h-12 w-12 bg-gray-200" />}
-              </div>
-              {r.name} - {r.price} kr
-              <button className="ml-2 text-red-500" onClick={() => handleDeleteRecord(r.id!)}>
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+    <div className="min-h-screen w-full px-8 pt-20">
+      <AddRecord onSubmit={handleNewRecord} />
+      <ul className="mt-4 flex flex-col gap-4">
+        {records.map(r => (
+          <li key={r.id} className="flex items-center gap-4">
+            <div className="relative h-12 w-12">
+              {r.image ? <Image src={r.image} alt={r.name} fill /> : <div className="h-12 w-12 bg-gray-200" />}
+            </div>
+            <div>
+              <p>{r.name}</p>
+              <p>{r.price} kr</p>
+            </div>
+            <button className="ml-auto text-red-500" onClick={() => handleDeleteRecord(r.id!)}>
+              Delete
+            </button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

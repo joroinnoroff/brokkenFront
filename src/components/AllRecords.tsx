@@ -1,5 +1,6 @@
 "use client"
-import { fetchRecords } from '@/app/api/records/route';
+
+import { fetchRecords } from '@/lib/api';
 import React, { useEffect, useState } from 'react'
 interface RecordType {
   id?: number;
@@ -13,7 +14,7 @@ export default function AllRecords() {
   const [records, setRecords] = useState<RecordType[]>([]);
 
   useEffect(() => {
-    fetchRecords().then(setRecords);
+    fetchRecords().then(setRecords).catch(console.error);
   }, []);
   return (
     <div>
