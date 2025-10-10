@@ -48,7 +48,7 @@ export default function HeroCon() {
       ref={containerRef}
       className=""
     >
-      <div className="  w-full flex-col min-h-full">
+      <div className="  w-full flex-col min-h-full mt-12">
         {[...Array(1)].map((_, i) => (
           <div key={i} className=" uppercase">
             <FuzzyText

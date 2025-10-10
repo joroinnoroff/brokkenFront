@@ -22,7 +22,7 @@ function VinylModel() {
     <primitive
       ref={ref}
       object={gltf.scene}
-      scale={20}           // adjust scale if too small/big
+      scale={15}           // adjust scale if too small/big
       position={[0, -1, 0]} // center vertically
     />
   );
@@ -30,7 +30,7 @@ function VinylModel() {
 
 export default function Vinyl() {
   return (
-    <div className="w-screen h-[115vw]">
+    <div className="w-screen min-h-[115vw]">
       <Canvas camera={{ position: [0, 0, 12], fov: 35 }}>
         <ambientLight intensity={0.8} />
         <directionalLight position={[5, 5, 5]} intensity={0.8} />
