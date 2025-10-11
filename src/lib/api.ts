@@ -33,17 +33,18 @@ export async function fetchEvents(): Promise<EventType[]> {
   return res.json();
 }
 
-export async function fetchEventsById(id: string): Promise<EventType[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/events?id=${id}`);
-  if (!res.ok) throw new Error("Failed to fetch event by id");
+export async function fetchEventById(id: string) {
+  const res = await fetch(`/api/events?id=${id}`);
+  if (!res.ok) return null;
   return res.json();
 }
 
-export async function fetchRecordsById(id: string): Promise<RecordType[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}records?id=${id}`);
-  if (!res.ok) throw new Error("Failed to fetch record by id");
+export async function fetchRecordById(id: string) {
+  const res = await fetch(`/api/records?id=${id}`);
+  if (!res.ok) return null;
   return res.json();
 }
+
 
 export async function updateEvent(id: number, event: EventType): Promise<EventType> {
   const res = await fetch(`${API_PATH_EVENTS}?id=${id}`, {

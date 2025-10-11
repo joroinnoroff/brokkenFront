@@ -46,6 +46,24 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 }
 
+
+export async function PUT(req: NextRequest): Promise<NextResponse> {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+    if (!id) return NextResponse.json({ error: "ID is required" }, { status: 400 });
+
+    const res = await fetch(`${API_URL}/records?id=${id}`, { method: "PUT" });
+    if (!res.ok) throw new Error("Failed to update record");
+    const data = await res.json();
+    return NextResponse.json(data);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Failed to update record";
+    const error: ErrorResponse = { error: message };
+    return NextResponse.json(error, { status: 500 });
+  }
+}
+
 export async function DELETE(req: NextRequest): Promise<NextResponse> {
   try {
     const { searchParams } = new URL(req.url);

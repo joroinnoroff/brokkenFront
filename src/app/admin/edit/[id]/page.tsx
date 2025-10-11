@@ -1,22 +1,46 @@
-import { fetchEventsById } from '@/lib/api'
-import React from 'react'
+import { fetchEventById, fetchRecordById } from "@/lib/api";
 
 interface AdminEditProps {
-  params: { id: string }
+  params: { id: string };
 }
-export default async function IdPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const event = await fetchEventsById(id);
 
+export default async function IdPage({ params }: AdminEditProps) {
+  // Try loading event first
+  const event = await fetchEventById(params.id);
 
+  // If no event found, try loading record
+  const record = !event ? await fetchRecordById(params.id) : null;
 
+  if (!event && !record) {
+    return <div className="p-4">❌ Nothing found with ID {params.id}</div>;
+  }
+
+  const item = event || record; // whichever exists
+  const isEvent = !!event;
 
   return (
-    <div>
+    <div className="p-4">
+      <h1 className="text-xl font-bold">
+        Editing {isEvent ? "Event" : "Record"}: {item.name}
+      </h1>
 
-      <p>{event.name || record.name}</p>
+      <div className="mt-4">
+        <p><strong>ID:</strong> {item.id}</p>
+        <p><strong>Description:</strong> {item.description}</p>
+
+        {isEvent ? (
+          <>
+            <p><strong>Start date:</strong> {item.start_date}</p>
+            <p><strong>End date:</strong> {item.end_date}</p>
+            <p><strong>Location:</strong> {item.location}</p>
+          </>
+        ) : (
+          <>
+            <p><strong>Release date:</strong> {item.release_date}</p>
+            <p><strong>Price:</strong> {item.price} NOK</p>
+          </>
+        )}
+      </div>
     </div>
-  )
+  );
 }
-
-
