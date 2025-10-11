@@ -2,10 +2,11 @@ import { fetchEventById, fetchRecordById } from "@/lib/api";
 
 interface AdminEditProps {
   params: { id: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 export default async function IdPage({ params }: AdminEditProps) {
-  // Try loading event first
+
   const event = await fetchEventById(params.id);
 
   // If no event found, try loading record
