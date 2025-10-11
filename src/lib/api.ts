@@ -33,6 +33,32 @@ export async function fetchEvents(): Promise<EventType[]> {
   return res.json();
 }
 
+export async function fetchEventsById(id: string): Promise<EventType[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/events?id=${id}`);
+  if (!res.ok) throw new Error("Failed to fetch event by id");
+  return res.json();
+}
+
+export async function fetchRecordsById(id: string): Promise<RecordType[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}records?id=${id}`);
+  if (!res.ok) throw new Error("Failed to fetch record by id");
+  return res.json();
+}
+
+export async function updateEvent(id: number, event: EventType): Promise<EventType> {
+  const res = await fetch(`${API_PATH_EVENTS}?id=${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(event),
+  });
+  if (!res.ok) {
+    throw new Error("Failed to update event")
+  }
+  return res.json()
+}
+
+
+
 export async function createRecord(record: RecordType): Promise<RecordType> {
   const res = await fetch(API_PATH_RECORDS, {
     method: "POST",
@@ -50,6 +76,19 @@ export async function createEvent(event: EventType): Promise<EventType> {
   });
   if (!res.ok) throw new Error("Failed to create event");
   return res.json();
+}
+
+
+export async function updateRecord(id: number, record: RecordType): Promise<RecordType> {
+  const res = await fetch(`${API_PATH_RECORDS}?id=${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(record),
+  });
+  if (!res.ok) {
+    throw new Error("Failed to update record")
+  }
+  return res.json()
 }
 
 export async function deleteRecord(id: number): Promise<RecordType> {

@@ -4,6 +4,7 @@ import { fetchRecords, createRecord, deleteRecord, RecordType, EventType, fetchE
 import AddRecord from "@/app/admin/components/AddRecord";
 import Image from "next/image";
 import AddEvent from "./components/AddEvent";
+import Link from "next/link";
 
 export default function RecordsPage() {
   const [records, setRecords] = useState<RecordType[]>([]);
@@ -39,27 +40,29 @@ export default function RecordsPage() {
       </div>
       <ul className="mt-4 flex flex-col gap-4">
         {records.map(r => (
-          <li key={r.id} className="flex items-center gap-4">
-            <div className="relative h-12 w-12">
-              {r.image ? (
-                <Image
-                  src={r.image}
-                  alt={r.name}
-                  fill
-                  style={{ objectFit: "cover" }}
-                />
-              ) : (
-                <div className="h-12 w-12 bg-gray-200" />
-              )}
-            </div>
-            <div>
-              <p>{r.name}</p>
-              <p>{r.price} kr</p>
-            </div>
-            <button className="ml-auto text-red-500" onClick={() => handleDeleteRecord(r.id!)}>
-              Delete
-            </button>
-          </li>
+          <Link href={`/admin/edit/${r.id}`} key={r.id}>
+            <li key={r.id} className="flex items-center gap-4">
+              <div className="relative h-12 w-12">
+                {r.image ? (
+                  <Image
+                    src={r.image}
+                    alt={r.name}
+                    fill
+                    style={{ objectFit: "cover" }}
+                  />
+                ) : (
+                  <div className="h-12 w-12 bg-gray-200" />
+                )}
+              </div>
+              <div>
+                <p>{r.name}</p>
+                <p>{r.price} kr</p>
+              </div>
+              <button className="ml-auto text-red-500" onClick={() => handleDeleteRecord(r.id!)}>
+                Delete
+              </button>
+            </li>
+          </Link>
         ))}
       </ul>
 
