@@ -87,7 +87,7 @@ export default function HeroCon() {
               </p>
             </div>
             <div className="ctas mt-20  flex gap-20 mr-auto">
-              <Link href={"/records"} className=" bg-[#D26F6B] rounded-full px-8 py-3">
+              <Link href={"/records"} className=" border rounded-full px-8 py-3">
                 Records
               </Link>
               <Link href={"/events"} className="border rounded-full px-8 py-3">

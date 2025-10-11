@@ -1,19 +1,29 @@
 "use client";
 import { useEffect, useState } from "react";
-import { fetchRecords, createRecord, deleteRecord, RecordType } from "@/lib/api";
+import { fetchRecords, createRecord, deleteRecord, RecordType, EventType, fetchEvents, createEvent } from "@/lib/api";
 import AddRecord from "@/app/admin/components/AddRecord";
 import Image from "next/image";
+import AddEvent from "./components/AddEvent";
 
 export default function RecordsPage() {
   const [records, setRecords] = useState<RecordType[]>([]);
+  const [events, setEvents] = useState<EventType[]>([]);
+
 
   useEffect(() => {
     fetchRecords().then(setRecords).catch(console.error);
+    fetchEvents().then(setEvents).catch(console.log)
   }, []);
 
   const handleNewRecord = async (record: Omit<RecordType, "id">) => {
     const res = await createRecord(record as RecordType);
     setRecords(prev => [...prev, res]);
+  };
+
+
+  const handleNewEvent = async (event: Omit<EventType, "id">) => {
+    const res = await createEvent(event as EventType);
+    setEvents(prev => [...prev, res]);
   };
 
   const handleDeleteRecord = async (id: number) => {
@@ -23,7 +33,10 @@ export default function RecordsPage() {
 
   return (
     <div className="min-h-screen w-full px-8 pt-20">
-      <AddRecord onSubmit={handleNewRecord} />
+      <div className="flex gap-12 items-center my-12 border-b pb-5">
+        <AddEvent onSubmit={handleNewEvent} />
+        <AddRecord onSubmit={handleNewRecord} />
+      </div>
       <ul className="mt-4 flex flex-col gap-4">
         {records.map(r => (
           <li key={r.id} className="flex items-center gap-4">
@@ -49,6 +62,8 @@ export default function RecordsPage() {
           </li>
         ))}
       </ul>
+
+
     </div>
   );
 }
