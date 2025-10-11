@@ -21,7 +21,7 @@ interface EventData {
 }
 
 interface AddEventProps {
-  onSubmit: (record: EventData) => void;
+  onSubmit: (event: EventData) => void;
 }
 
 export default function AddEvent({ onSubmit }: AddEventProps) {
@@ -97,7 +97,7 @@ export default function AddEvent({ onSubmit }: AddEventProps) {
 
           <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description" />
           <button onClick={handleSubmit} className="mt-2 bg-indigo-600 text-white px-4 py-2 rounded">
-            Add Record
+            Add Event
           </button>
         </div>
       </DialogContent>
