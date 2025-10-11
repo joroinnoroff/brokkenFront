@@ -48,10 +48,10 @@ export default function AddEvent({ onSubmit }: AddEventProps) {
 
     const form = new FormData();
     form.append("file", file);
-    form.append("folder", "events");
+
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/uploads`, {
         method: "POST",
         body: form,
       });
