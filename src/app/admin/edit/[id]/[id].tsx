@@ -6,17 +6,15 @@ interface AdminEditProps {
 }
 
 export default async function IdPage({ params }: AdminEditProps) {
-
-  const event = await fetchEventById(params.id);
-
-  // If no event found, try loading record
-  const record = !event ? await fetchRecordById(params.id) : null;
+  const { id } = params;
+  const event = await fetchEventById(id);
+  const record = !event ? await fetchRecordById(id) : null;
 
   if (!event && !record) {
-    return <div className="p-4">❌ Nothing found with ID {params.id}</div>;
+    return <div className="p-4">❌ Nothing found with ID {id}</div>;
   }
 
-  const item = event || record; // whichever exists
+  const item = event || record;
   const isEvent = !!event;
 
   return (
