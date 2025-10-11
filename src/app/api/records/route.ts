@@ -15,18 +15,33 @@ interface ErrorResponse {
   error: string;
 }
 
-export async function GET(): Promise<NextResponse> {
+
+
+export async function GET(request: Request): Promise<NextResponse> {
   try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    // If ID is provided, fetch a single record
+    if (id) {
+      const res = await fetch(`${API_URL}/records/${id}`);
+      if (!res.ok) throw new Error(`Failed to fetch record with id ${id}`);
+      const data = await res.json();
+      return NextResponse.json(data);
+    }
+
+    // Else fetch all records
     const res = await fetch(`${API_URL}/records`);
     if (!res.ok) throw new Error("Failed to fetch records");
-    const data: RecordType[] = await res.json();
+    const data = await res.json();
     return NextResponse.json(data);
+
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Failed to fetch records";
-    const error: ErrorResponse = { error: message };
-    return NextResponse.json(error, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
