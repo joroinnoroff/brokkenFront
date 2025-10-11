@@ -28,7 +28,16 @@ export default function RecordsPage() {
         {records.map(r => (
           <li key={r.id} className="flex items-center gap-4">
             <div className="relative h-12 w-12">
-              {r.image ? <img src={r.image} alt={r.name} /> : <div className="h-12 w-12 bg-gray-200" />}
+              {r.image ? (
+                <Image
+                  src={r.image}
+                  alt={r.name}
+                  fill
+                  style={{ objectFit: "cover" }}
+                />
+              ) : (
+                <div className="h-12 w-12 bg-gray-200" />
+              )}
             </div>
             <div>
               <p>{r.name}</p>

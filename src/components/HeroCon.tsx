@@ -4,7 +4,7 @@ import FuzzyText from "./FuzzyText";
 import gsap from "gsap";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-
+import Image from "next/image";
 
 export default function HeroCon() {
   const [fontSize, setFontSize] = useState(200);
@@ -75,6 +75,7 @@ export default function HeroCon() {
               - Electronic, experimental, funky, punky, jazzy, classy, hard & tasty
               … and more!
             </p>
+
             <div className="flex items-center gap-2 mt-8">
               <p className=" ml-2 flex flex-col">
                 <span className=" opacity-80">- Opening hours</span>
@@ -86,7 +87,7 @@ export default function HeroCon() {
               </p>
             </div>
             <div className="ctas mt-20  flex gap-20 mr-auto">
-              <Link href={"/records"} className="border rounded-full px-8 py-3">
+              <Link href={"/records"} className=" bg-[#D26F6B] rounded-full px-8 py-3">
                 Records
               </Link>
               <Link href={"/events"} className="border rounded-full px-8 py-3">
@@ -94,7 +95,9 @@ export default function HeroCon() {
               </Link>
             </div>
 
-
+            <div className="mt-20">
+              <Image src="/brokkenlogo.png" alt="" width={200} height={200} />
+            </div>
 
 
           </motion.div>

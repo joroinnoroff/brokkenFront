@@ -6,14 +6,14 @@ import * as THREE from "three";
 
 function VinylModel() {
 
-  const [scale, setScale] = useState(25);
+  const [scale, setScale] = useState(20);
 
   // MatchMedia logic
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 1024px)");
 
     const handleMediaChange = (e: MediaQueryListEvent | MediaQueryList) => {
-      setScale(e.matches ? 30 : 25); // If mobile/tablet → scale 30
+      setScale(e.matches ? 30 : 20); // If mobile/tablet → scale 30
     };
 
     // Run once on mount
