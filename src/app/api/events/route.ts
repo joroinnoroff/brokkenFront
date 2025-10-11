@@ -61,9 +61,17 @@ export async function PUT(req: NextRequest): Promise<NextResponse> {
     const id = searchParams.get("id");
     if (!id) return NextResponse.json({ error: "ID is required" }, { status: 400 });
 
-    const res = await fetch(`${API_URL}/events?id=${id}`, { method: "PUT" });
+    const updatedEvent: EventType = await req.json();
+
+    const res = await fetch(`${API_URL}/events/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedEvent),
+    });
+
     if (!res.ok) throw new Error("Failed to update record");
-    const data = await res.json();
+
+    const data: EventType = await res.json();
     return NextResponse.json(data);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Failed to update event";

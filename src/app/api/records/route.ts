@@ -68,9 +68,17 @@ export async function PUT(req: NextRequest): Promise<NextResponse> {
     const id = searchParams.get("id");
     if (!id) return NextResponse.json({ error: "ID is required" }, { status: 400 });
 
-    const res = await fetch(`${API_URL}/records?id=${id}`, { method: "PUT" });
+    const updateRecord: RecordType = await req.json();
+
+    const res = await fetch(`${API_URL}/records/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updateRecord),
+    });
+
     if (!res.ok) throw new Error("Failed to update record");
-    const data = await res.json();
+
+    const data: RecordType = await res.json();
     return NextResponse.json(data);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Failed to update record";
@@ -78,6 +86,7 @@ export async function PUT(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json(error, { status: 500 });
   }
 }
+
 
 export async function DELETE(req: NextRequest): Promise<NextResponse> {
   try {
