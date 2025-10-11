@@ -95,7 +95,7 @@ export default function HeroCon() {
               </Link>
             </div>
 
-            <div className="mt-20">
+            <div className="mt-20 flex items-center justify-center">
               <Image src="/brokkenlogo.png" alt="" width={200} height={200} />
             </div>
 
