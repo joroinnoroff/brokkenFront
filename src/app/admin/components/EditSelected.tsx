@@ -75,8 +75,15 @@ export default function EditSelected({ item, isEvent }: EditSelectedProps) {
     const updatedFields: Partial<RecordType> = {};
 
     Object.entries(formData).forEach(([key, value]) => {
+      let finalValue = value;
+
+      // format dates for backend
+      if (["release_date"].includes(key) && typeof value === "string") {
+        finalValue = value.split("T")[0]; // YYYY-MM-DD
+      }
+
       const originalValue = (item as RecordType)[key as keyof RecordType];
-      if (value !== originalValue) updatedFields[key as keyof RecordType] = value;
+      if (finalValue !== originalValue) updatedFields[key as keyof RecordType] = finalValue;
     });
 
     if (!Object.keys(updatedFields).length) {
@@ -89,11 +96,16 @@ export default function EditSelected({ item, isEvent }: EditSelectedProps) {
       alert("Updated successfully!");
     } catch (err: unknown) {
       console.error(err);
-
-      // Narrow unknown to Error type
       const message = err instanceof Error ? err.message : "Update failed";
       alert(message);
     }
+  };
+
+
+
+  const formatDateForInput = (date?: string) => {
+    if (!date) return "";
+    return date.split("T")[0]; // "YYYY-MM-DD"
   };
 
 
@@ -130,7 +142,7 @@ export default function EditSelected({ item, isEvent }: EditSelectedProps) {
             <input
               type="date"
               name="start_date"
-              value={formData.start_date ?? ""}
+              value={formatDateForInput(formData.start_date) ?? ""}
               onChange={handleChange}
               className="border px-2 py-1 w-full mt-2"
             />
@@ -139,7 +151,7 @@ export default function EditSelected({ item, isEvent }: EditSelectedProps) {
             <input
               type="date"
               name="end_date"
-              value={formData.end_date ?? ""}
+              value={formatDateForInput(formData.end_date) ?? ""}
               onChange={handleChange}
               className="border px-2 py-1 w-full mt-2"
             />
@@ -151,7 +163,7 @@ export default function EditSelected({ item, isEvent }: EditSelectedProps) {
             <input
               type="date"
               name="release_date"
-              value={formData.release_date ?? ""}
+              value={formatDateForInput(formData.release_date) ?? ""}
               onChange={handleChange}
               className="border px-2 py-1 w-full mt-2"
             />
