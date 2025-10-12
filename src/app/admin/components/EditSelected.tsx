@@ -83,10 +83,7 @@ export default function EditSelected({ item, isEvent }: EditSelectedProps) {
         finalValue = finalValue.split("T")[0];
       }
 
-      // Convert price to number
-      if (key === "price" && finalValue !== undefined && finalValue !== null && finalValue !== "") {
-        finalValue = Number(finalValue);
-      }
+
 
       const originalValue = item[key as keyof typeof item];
       if (finalValue !== originalValue) {
