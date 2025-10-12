@@ -1,5 +1,7 @@
 const API_PATH_RECORDS = "/api/records";
 const API_PATH_EVENTS = "/api/events";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://sbrokken-back.vercel.app";
+
 export interface RecordType {
   id?: number;
   name: string;
@@ -88,7 +90,7 @@ export async function updateRecord(
   id: number,
   updatedFields: Partial<RecordType>
 ): Promise<RecordType> {
-  const res = await fetch(`/api/records?id=${id}`, {
+  const res = await fetch(`${BASE_URL}/api/records/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(updatedFields),
