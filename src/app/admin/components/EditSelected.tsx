@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import { RecordType, updateRecord } from "@/lib/api";
+import { EventType, RecordType, updateRecord } from "@/lib/api";
 
 interface EventData {
   id: number | string;
@@ -72,18 +72,23 @@ export default function EditSelected({ item, isEvent }: EditSelectedProps) {
   };
 
   const handleSubmit = async () => {
-    const updatedFields: Partial<RecordType> = {};
+    const updatedFields: Partial<RecordType | EventType> = {};
 
     Object.entries(formData).forEach(([key, value]) => {
       let finalValue = value;
 
-      // format dates for backend
-      if (["release_date"].includes(key) && typeof value === "string") {
-        finalValue = value.split("T")[0]; // YYYY-MM-DD
+      // Convert dates to YYYY-MM-DD
+      if (["release_date", "start_date", "end_date"].includes(key) && typeof value === "string") {
+        finalValue = value.split("T")[0];
       }
 
-      const originalValue = (item as RecordType)[key as keyof RecordType];
-      if (finalValue !== originalValue) updatedFields[key as keyof RecordType] = finalValue;
+      // Convert price to number
+      if (key === "price" && value !== undefined && value !== null && value !== "") {
+        finalValue = Number(value);
+      }
+
+      const originalValue = (item as any)[key];
+      if (finalValue !== originalValue) updatedFields[key as keyof typeof updatedFields] = finalValue;
     });
 
     if (!Object.keys(updatedFields).length) {
@@ -100,6 +105,7 @@ export default function EditSelected({ item, isEvent }: EditSelectedProps) {
       alert(message);
     }
   };
+
 
 
 
