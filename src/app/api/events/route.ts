@@ -1,7 +1,7 @@
 import { EventType } from "@/lib/api";
 import { NextRequest, NextResponse } from "next/server";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://brokken-back.vercel.app/api";
 
 
 
@@ -18,7 +18,7 @@ export async function GET(request: Request): Promise<NextResponse> {
 
     // If ID is provided, fetch a single record
     if (id) {
-      const res = await fetch(`${API_URL}/events/${id}`);
+      const res = await fetch(API_URL + '/events?=${id}');
       if (!res.ok) throw new Error(`Failed to fetch event with id ${id}`);
       const data = await res.json();
       return NextResponse.json(data);

@@ -5,7 +5,7 @@ interface AdminEditProps {
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-export default async function IdPage({ params }: AdminEditProps) {
+export default async function ProductDetailsPage({ params }: { params: { id: string } }) {
   const { id } = params;
   const event = await fetchEventById(id);
   const record = !event ? await fetchRecordById(id) : null;
