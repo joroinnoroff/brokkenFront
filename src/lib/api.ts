@@ -90,7 +90,7 @@ export async function updateRecord(
   id: number,
   updatedFields: Partial<RecordType>
 ): Promise<RecordType> {
-  const res = await fetch(`${BASE_URL}/records/${id}`, {
+  const res = await fetch(`${BASE_URL}/records?id=${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(updatedFields),
