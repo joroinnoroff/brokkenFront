@@ -87,9 +87,12 @@ export default function EditSelected({ item, isEvent }: EditSelectedProps) {
     try {
       await updateRecord(item.id as number, updatedFields);
       alert("Updated successfully!");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      alert(err.message || "Update failed");
+
+      // Narrow unknown to Error type
+      const message = err instanceof Error ? err.message : "Update failed";
+      alert(message);
     }
   };
 
