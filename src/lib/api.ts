@@ -89,7 +89,7 @@ export async function updateRecord(id: number, updatedFields: Partial<RecordType
     throw new Error("No fields to update");
   }
 
-  const res = await fetch(`/api/records/${id}`, {
+  const res = await fetch(`/api/records/${id}`, {  // ✅ use /records/ID
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(updatedFields),
@@ -102,6 +102,7 @@ export async function updateRecord(id: number, updatedFields: Partial<RecordType
 
   return res.json();
 }
+
 
 export async function deleteRecord(id: number): Promise<RecordType> {
   const res = await fetch(`${API_PATH_RECORDS}?id=${id}`, { method: "DELETE" });
