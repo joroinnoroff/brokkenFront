@@ -32,7 +32,7 @@ export default async function ProductDetailsPage({ params }: PageProps) {
         </div>
       )}
 
-      <EditSelected isEvent={isEvent} item={item} />
+      <EditSelected item={item} />
 
 
       <div className="mt-4">
