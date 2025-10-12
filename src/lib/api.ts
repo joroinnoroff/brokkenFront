@@ -34,13 +34,17 @@ export async function fetchEvents(): Promise<EventType[]> {
 }
 
 export async function fetchEventById(id: string) {
-  const res = await fetch(`/api/events?id=${id}`);
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
+  const res = await fetch(`${baseUrl}/events?id=${id}`, { cache: "no-store" });
+
   if (!res.ok) return null;
   return res.json();
 }
 
 export async function fetchRecordById(id: string) {
-  const res = await fetch(`/api/records?id=${id}`);
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
+  const res = await fetch(`${baseUrl}/records?id=${id}`, { cache: "no-store" });
+
   if (!res.ok) return null;
   return res.json();
 }

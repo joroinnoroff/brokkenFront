@@ -6,7 +6,7 @@ import Image from "next/image";
 import AddEvent from "./components/AddEvent";
 import Link from "next/link";
 
-export default function RecordsPage() {
+export default function AdminPage() {
   const [records, setRecords] = useState<RecordType[]>([]);
   const [events, setEvents] = useState<EventType[]>([]);
 
@@ -38,33 +38,68 @@ export default function RecordsPage() {
         <AddEvent onSubmit={handleNewEvent} />
         <AddRecord onSubmit={handleNewRecord} />
       </div>
-      <ul className="mt-4 flex flex-col gap-4">
-        {records.map(r => (
-          <Link href={`/admin/edit/${r.id}`} key={r.id}>
-            <li key={r.id} className="flex items-center gap-4">
-              <div className="relative h-12 w-12">
-                {r.image ? (
-                  <Image
-                    src={r.image}
-                    alt={r.name}
-                    fill
-                    style={{ objectFit: "cover" }}
-                  />
-                ) : (
-                  <div className="h-12 w-12 bg-gray-200" />
-                )}
-              </div>
-              <div>
-                <p>{r.name}</p>
-                <p>{r.price} kr</p>
-              </div>
-              <button className="ml-auto text-red-500" onClick={() => handleDeleteRecord(r.id!)}>
-                Delete
-              </button>
-            </li>
-          </Link>
-        ))}
-      </ul>
+      <div>
+        <h2>Events</h2>
+        <ul className="mt-4 flex flex-col gap-4">
+          {events.map(e => (
+            <Link href={`/admin/edit/${e.id}`} key={e.id}>
+              <li key={e.id} className="flex items-center gap-4">
+                <div className="relative h-12 w-12">
+                  {e.image ? (
+                    <Image
+                      src={e.image}
+                      alt={e.name}
+                      fill
+                      style={{ objectFit: "cover" }}
+                    />
+                  ) : (
+                    <div className="h-12 w-12 bg-gray-200" />
+                  )}
+                </div>
+                <div>
+                  <p>{e.name}</p>
+                  <p>{e.location} kr</p>
+                </div>
+                <button className="ml-auto text-red-500" onClick={() => handleDeleteRecord(e.id!)}>
+                  Delete
+                </button>
+              </li>
+            </Link>
+          ))}
+        </ul>
+
+
+
+        <hr className="my-12" />
+        <h2>Records</h2>
+        <ul className="mt-4 flex flex-col gap-4">
+          {records.map(r => (
+            <Link href={`/admin/edit/${r.id}`} key={r.id}>
+              <li key={r.id} className="flex items-center gap-4">
+                <div className="relative h-12 w-12">
+                  {r.image ? (
+                    <Image
+                      src={r.image}
+                      alt={r.name}
+                      fill
+                      style={{ objectFit: "cover" }}
+                    />
+                  ) : (
+                    <div className="h-12 w-12 bg-gray-200" />
+                  )}
+                </div>
+                <div>
+                  <p>{r.name}</p>
+                  <p>{r.price} kr</p>
+                </div>
+                <button className="ml-auto text-red-500" onClick={() => handleDeleteRecord(r.id!)}>
+                  Delete
+                </button>
+              </li>
+            </Link>
+          ))}
+        </ul>
+      </div>
 
 
     </div>

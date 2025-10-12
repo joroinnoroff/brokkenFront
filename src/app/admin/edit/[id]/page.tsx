@@ -1,4 +1,6 @@
 import { fetchEventById, fetchRecordById } from "@/lib/api";
+import Image from "next/image";
+import EditSelected from "../../components/EditSelected";
 
 interface AdminEditProps {
   params: { id: string };
@@ -6,7 +8,7 @@ interface AdminEditProps {
 }
 
 export default async function ProductDetailsPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+  const { id } = await params;
   const event = await fetchEventById(id);
   const record = !event ? await fetchRecordById(id) : null;
 
@@ -22,6 +24,17 @@ export default async function ProductDetailsPage({ params }: { params: { id: str
       <h1 className="text-xl font-bold">
         Editing {isEvent ? "Event" : "Record"}: {item.name}
       </h1>
+
+      {item.image && (
+        <>
+          <div className="h-32 w-32 relative">
+            <Image src={item.image} alt={item.name} fill />
+          </div>
+        </>
+      )}
+
+
+      <EditSelected item={item} isEvent={isEvent} />
 
       <div className="mt-4">
         <p><strong>ID:</strong> {item.id}</p>
