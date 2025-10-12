@@ -72,23 +72,26 @@ export default function EditSelected({ item, isEvent }: EditSelectedProps) {
   };
 
   const handleSubmit = async () => {
-    const updatedFields: Partial<RecordType | EventType> = {};
+    type FormItem = RecordType | EventType;
+    const updatedFields: Partial<FormItem> = {};
 
-    Object.entries(formData).forEach(([key, value]) => {
-      let finalValue = value;
+    (Object.keys(formData) as (keyof FormItem)[]).forEach((key) => {
+      let finalValue: any = formData[key]; // temporary "any" here is fine inside TS type inference
 
       // Convert dates to YYYY-MM-DD
-      if (["release_date", "start_date", "end_date"].includes(key) && typeof value === "string") {
-        finalValue = value.split("T")[0];
+      if (["release_date", "start_date", "end_date"].includes(key as string) && typeof finalValue === "string") {
+        finalValue = finalValue.split("T")[0];
       }
 
       // Convert price to number
-      if (key === "price" && value !== undefined && value !== null && value !== "") {
-        finalValue = Number(value);
+      if (key === "price" && finalValue !== undefined && finalValue !== null && finalValue !== "") {
+        finalValue = Number(finalValue);
       }
 
-      const originalValue = (item as any)[key];
-      if (finalValue !== originalValue) updatedFields[key as keyof typeof updatedFields] = finalValue;
+      const originalValue = item[key as keyof typeof item];
+      if (finalValue !== originalValue) {
+        updatedFields[key] = finalValue;
+      }
     });
 
     if (!Object.keys(updatedFields).length) {
@@ -105,6 +108,7 @@ export default function EditSelected({ item, isEvent }: EditSelectedProps) {
       alert(message);
     }
   };
+
 
 
 
