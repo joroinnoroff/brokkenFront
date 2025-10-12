@@ -71,7 +71,8 @@ export async function PUT(req: NextRequest): Promise<NextResponse> {
 
     const updateRecord: RecordType = await req.json();
 
-    const res = await fetch(`${API_URL}/records/${id}`, {
+
+    const res = await fetch(`${API_URL}/records?id=${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updateRecord),
