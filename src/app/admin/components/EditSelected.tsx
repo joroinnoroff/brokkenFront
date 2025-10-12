@@ -27,15 +27,20 @@ type EditSelectedProps = {
 };
 
 export default function EditSelected({ item, isEvent }: EditSelectedProps) {
-  const [formData, setFormData] = useState({ ...item });
+  const [formData, setFormData] = useState<EventData | RecordData>(item);
+
+
   const [uploading, setUploading] = useState(false);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: name === "price" ? Number(value) : value }));
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "price" ? Number(value) : value, // TS might still warn slightly
+    } as EventData | RecordData)); // cast back to correct type
   };
+
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length) return;
@@ -67,10 +72,13 @@ export default function EditSelected({ item, isEvent }: EditSelectedProps) {
 
   const handleSubmit = async () => {
     // Only send changed fields
-    const updatedFields: any = {};
+    const updatedFields: Record<string, unknown> = {};
+
     Object.entries(formData).forEach(([key, value]) => {
-      if (value !== (item as any)[key]) updatedFields[key] = value;
+      const originalValue = (item as unknown as Record<string, unknown>)[key];
+      if (value !== originalValue) updatedFields[key] = value;
     });
+
 
     if (Object.keys(updatedFields).length === 0) {
       alert("Nothing changed!");
@@ -113,47 +121,58 @@ export default function EditSelected({ item, isEvent }: EditSelectedProps) {
 
       {isEvent ? (
         <>
-          <input
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            className="border px-2 py-1 w-full mt-2"
-            placeholder="Location"
-          />
-          <input
-            type="date"
-            name="start_date"
-            value={formData.start_date}
-            onChange={handleChange}
-            className="border px-2 py-1 w-full mt-2"
-          />
-          <input
-            type="date"
-            name="end_date"
-            value={formData.end_date}
-            onChange={handleChange}
-            className="border px-2 py-1 w-full mt-2"
-          />
+          {"location" in formData && (
+            <input
+              name="location"
+              value={formData.location ?? ""}
+              onChange={handleChange}
+              className="border px-2 py-1 w-full mt-2"
+              placeholder="Location"
+            />
+          )}
+          {"start_date" in formData && (
+            <input
+              type="date"
+              name="start_date"
+              value={formData.start_date ?? ""}
+              onChange={handleChange}
+              className="border px-2 py-1 w-full mt-2"
+            />
+          )}
+          {"end_date" in formData && (
+            <input
+              type="date"
+              name="end_date"
+              value={formData.end_date ?? ""}
+              onChange={handleChange}
+              className="border px-2 py-1 w-full mt-2"
+            />
+          )}
         </>
       ) : (
         <>
-          <input
-            type="date"
-            name="release_date"
-            value={formData.release_date}
-            onChange={handleChange}
-            className="border px-2 py-1 w-full mt-2"
-          />
-          <input
-            type="number"
-            name="price"
-            value={formData.price}
-            onChange={handleChange}
-            className="border px-2 py-1 w-full mt-2"
-            placeholder="Price"
-          />
+          {"release_date" in formData && (
+            <input
+              type="date"
+              name="release_date"
+              value={formData.release_date ?? ""}
+              onChange={handleChange}
+              className="border px-2 py-1 w-full mt-2"
+            />
+          )}
+          {"price" in formData && (
+            <input
+              type="number"
+              name="price"
+              value={formData.price ?? ""}
+              onChange={handleChange}
+              className="border px-2 py-1 w-full mt-2"
+              placeholder="Price"
+            />
+          )}
         </>
       )}
+
 
       {/* Image preview / upload */}
       <div className="flex flex-col gap-2 mt-2">

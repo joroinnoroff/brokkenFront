@@ -2,13 +2,14 @@ import { fetchEventById, fetchRecordById } from "@/lib/api";
 import Image from "next/image";
 import EditSelected from "../../components/EditSelected";
 
-interface AdminEditProps {
-  params: { id: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+type PageProps = {
+  params: Promise<{ id: string }>
 }
 
-export default async function ProductDetailsPage({ params }: { params: { id: string } }) {
+export default async function ProductDetailsPage({ params }: PageProps) {
   const { id } = await params;
+
+  if (!id) return;
   const event = await fetchEventById(id);
   const record = !event ? await fetchRecordById(id) : null;
 
@@ -26,15 +27,13 @@ export default async function ProductDetailsPage({ params }: { params: { id: str
       </h1>
 
       {item.image && (
-        <>
-          <div className="h-32 w-32 relative">
-            <Image src={item.image} alt={item.name} fill />
-          </div>
-        </>
+        <div className="h-32 w-32 relative">
+          <Image src={item.image} alt={item.name} fill style={{ objectFit: "cover" }} />
+        </div>
       )}
 
+      <EditSelected isEvent={isEvent} item={item} />
 
-      <EditSelected item={item} isEvent={isEvent} />
 
       <div className="mt-4">
         <p><strong>ID:</strong> {item.id}</p>
