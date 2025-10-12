@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
+import { RecordType, updateRecord } from "@/lib/api";
 
 interface EventData {
   id: number | string;
@@ -71,35 +72,27 @@ export default function EditSelected({ item, isEvent }: EditSelectedProps) {
   };
 
   const handleSubmit = async () => {
-    // Only send changed fields
-    const updatedFields: Record<string, unknown> = {};
+    const updatedFields: Partial<RecordType> = {};
 
     Object.entries(formData).forEach(([key, value]) => {
-      const originalValue = (item as unknown as Record<string, unknown>)[key];
-      if (value !== originalValue) updatedFields[key] = value;
+      const originalValue = (item as RecordType)[key as keyof RecordType];
+      if (value !== originalValue) updatedFields[key as keyof RecordType] = value;
     });
 
-
-    if (Object.keys(updatedFields).length === 0) {
+    if (!Object.keys(updatedFields).length) {
       alert("Nothing changed!");
       return;
     }
 
-    const endpoint = isEvent ? "/api/events" : "/api/records";
-
     try {
-      const res = await fetch(`${endpoint}?id=${item.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedFields),
-      });
-      if (!res.ok) throw new Error("Update failed");
+      await updateRecord(item.id as number, updatedFields);
       alert("Updated successfully!");
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Update failed!");
+      alert(err.message || "Update failed");
     }
   };
+
 
   return (
     <div className="mt-6 flex flex-col gap-3">

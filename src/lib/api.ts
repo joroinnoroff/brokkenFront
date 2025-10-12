@@ -84,16 +84,23 @@ export async function createEvent(event: EventType): Promise<EventType> {
 }
 
 
-export async function updateRecord(id: number, record: RecordType): Promise<RecordType> {
-  const res = await fetch(`${API_PATH_RECORDS}?id=${id}`, {
+export async function updateRecord(id: number, updatedFields: Partial<RecordType>): Promise<RecordType> {
+  if (Object.keys(updatedFields).length === 0) {
+    throw new Error("No fields to update");
+  }
+
+  const res = await fetch(`/api/records/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(record),
+    body: JSON.stringify(updatedFields),
   });
+
   if (!res.ok) {
-    throw new Error("Failed to update record")
+    const err = await res.json();
+    throw new Error(err.error || "Failed to update record");
   }
-  return res.json()
+
+  return res.json();
 }
 
 export async function deleteRecord(id: number): Promise<RecordType> {
