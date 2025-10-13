@@ -8,44 +8,17 @@ import Image from "next/image";
 
 export default function HeroCon() {
   const [fontSize, setFontSize] = useState(200);
-  const containerRef = useRef<HTMLDivElement | null>(null);
+
   const [showContent, setShowContent] = useState(false);
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      const fontObj = { value: 200 };
 
-      // Step 1️⃣ Shrink font size over time
-      gsap.to(fontObj, {
-        value: 30,
-        delay: 1.8,
-        duration: 1.8,
-        ease: "power3.inOut",
-        onUpdate: () => setFontSize(fontObj.value),
-        onComplete: () => {
-          // Step 2️⃣ Animate containers inward & fade out except one
-          const wrappers = gsap.utils.toArray<HTMLDivElement>(".fuzzy-wrapper");
 
-          gsap.to(wrappers, {
-            y: (i) => (i - 5) * -50, // stagger vertically toward center
-            opacity: (i) => (i === 4 ? 1 : 0), // keep middle one visible
-            scale: (i) => (i === 4 ? 1 : 0.8),
-            duration: 1.6,
-            ease: "power3.inOut",
-            stagger: 0.05,
-            onComplete: () => {
-              setShowContent(true)
-            }
-          });
-        },
-      });
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, []);
+    setShowContent(true)
+  }, [])
 
   return (
     <div
-      ref={containerRef}
+
       className=""
     >
       <div className="  w-full flex-col min-h-full mt-12">
@@ -56,7 +29,7 @@ export default function HeroCon() {
               baseIntensity={0.1}
               hoverIntensity={2}
               enableHover={false}
-              fontSize={fontSize}
+              fontSize={50}
             >
               Brokken Records
             </FuzzyText>
