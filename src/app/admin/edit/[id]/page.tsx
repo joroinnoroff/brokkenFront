@@ -1,25 +1,59 @@
-"use client"
-import { fetchEventById, fetchRecordById, updateEvent, updateRecord } from "@/lib/api";
-
+"use client";
+import { useEffect, useState } from "react";
+import {
+  fetchEventById,
+  fetchRecordById,
+  updateEvent,
+  updateRecord,
+  RecordType,
+  EventType
+} from "@/lib/api";
 import EditSelected from "../../components/EditSelected";
 
-type PageProps = {
-  params: Promise<{ id: string }>
+interface PageProps {
+  params: { id: string };
 }
 
-export default async function ProductDetailsPage({ params }: PageProps) {
-  const { id } = await params;
+export default function ProductDetailsPage({ params }: PageProps) {
+  const { id } = params;
+  const [item, setItem] = useState<RecordType | EventType | null>(null);
+  const [isEvent, setIsEvent] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  if (!id) return;
-  const event = await fetchEventById(id);
-  const record = !event ? await fetchRecordById(id) : null;
+  useEffect(() => {
+    if (!id) return;
 
-  if (!event && !record) {
-    return <div className="p-4">❌ Nothing found with ID {id}</div>;
-  }
+    const loadData = async () => {
+      setLoading(true);
+      const eventData = await fetchEventById(id);
+      if (eventData) {
+        setItem(eventData);
+        setIsEvent(true);
+      } else {
+        const recordData = await fetchRecordById(id);
+        setItem(recordData);
+        setIsEvent(false);
+      }
+      setLoading(false);
+    };
 
-  const item = event || record;
-  const isEvent = !!event;
+    loadData();
+  }, [id]);
+
+  const handleSave = async (data: RecordType | EventType) => {
+    if (!data.id) return alert("Missing ID");
+
+    if (isEvent) {
+      await updateEvent(data.id, data as EventType);
+      alert("✅ Event updated!");
+    } else {
+      await updateRecord(data.id, data as RecordType);
+      alert("✅ Record updated!");
+    }
+  };
+
+  if (loading) return <p className="p-4">⏳ Loading...</p>;
+  if (!item) return <p className="p-4">❌ Not found</p>;
 
   return (
     <div className="p-4">
@@ -27,28 +61,7 @@ export default async function ProductDetailsPage({ params }: PageProps) {
         Editing {isEvent ? "Event" : "Record"}: {item.name}
       </h1>
 
-
-
-
-      {isEvent ? (
-        <EditSelected
-          item={item}
-          type="record"
-          onSave={async (data) => {
-            await updateRecord(data.id!, data);
-            alert("Record updated!");
-          }}
-        />
-      ) : (
-        <EditSelected
-          item={item}
-          type="event"
-          onSave={async (data) => {
-            await updateEvent(data.id!, data);
-            alert("Event updated!");
-          }}
-        />
-      )}
+      <EditSelected item={item} type={isEvent ? "event" : "record"} onSave={handleSave} />
 
       <div className="mt-4">
         <p><strong>ID:</strong> {item.id}</p>
@@ -56,14 +69,14 @@ export default async function ProductDetailsPage({ params }: PageProps) {
 
         {isEvent ? (
           <>
-            <p><strong>Start date:</strong> {item.start_date}</p>
-            <p><strong>End date:</strong> {item.end_date}</p>
-            <p><strong>Location:</strong> {item.location}</p>
+            <p><strong>Start date:</strong> {(item as EventType).start_date}</p>
+            <p><strong>End date:</strong> {(item as EventType).end_date}</p>
+            <p><strong>Location:</strong> {(item as EventType).location}</p>
           </>
         ) : (
           <>
-            <p><strong>Release date:</strong> {item.release_date}</p>
-            <p><strong>Price:</strong> {item.price} NOK</p>
+            <p><strong>Release date:</strong> {(item as RecordType).release_date}</p>
+            <p><strong>Price:</strong> {(item as RecordType).price} NOK</p>
           </>
         )}
       </div>
