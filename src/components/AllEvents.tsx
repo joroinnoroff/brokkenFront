@@ -20,7 +20,7 @@ export default function AllEvents() {
     <div className='grid gap-20 lg:grid-cols-2 my-12'>
       {events.map((ev, index) => (
         <div key={index} className=' space-y-4 '>
-          <div className="relative min-h-[500px]  w-[400px] my-4">
+          <div className="relative min-h-[500px] min-w-full lg:min-w-[400px] my-4">
             {ev.image ? (
               <Image
                 src={ev.image}
