@@ -1,6 +1,8 @@
 "use client"
 
 import { EventType, fetchEvents } from '@/lib/api';
+import e from 'express';
+import Image from 'next/image';
 import React, { useEffect, useState } from 'react'
 
 export default function AllEvents() {
@@ -13,7 +15,18 @@ export default function AllEvents() {
     <div>
       {events.map((ev, index) => (
         <div key={index}>
-          <p>{ev.name}</p>
+          <div className="relative min-h-[400px]  w-full">
+            {ev.image ? (
+              <Image
+                src={ev.image}
+                alt={ev.name}
+                fill
+                style={{ objectFit: "contain" }}
+              />
+            ) : (
+              <div className="h-12 w-12 bg-gray-200" />
+            )}
+          </div>
         </div>
       ))}
     </div>

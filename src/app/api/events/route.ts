@@ -61,15 +61,16 @@ export async function PUT(req: NextRequest): Promise<NextResponse> {
     const id = searchParams.get("id");
     if (!id) return NextResponse.json({ error: "ID is required" }, { status: 400 });
 
-    const updatedEvent: EventType = await req.json();
+    const updateEvent: EventType = await req.json();
 
-    const res = await fetch(`${API_URL}/events/${id}`, {
+
+    const res = await fetch(`${API_URL}/events?id=${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedEvent),
+      body: JSON.stringify(updateEvent),
     });
 
-    if (!res.ok) throw new Error("Failed to update record");
+    if (!res.ok) throw new Error("Failed to update event");
 
     const data: EventType = await res.json();
     return NextResponse.json(data);
@@ -79,6 +80,7 @@ export async function PUT(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json(error, { status: 500 });
   }
 }
+
 
 export async function DELETE(req: NextRequest): Promise<NextResponse> {
   try {

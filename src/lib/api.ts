@@ -52,17 +52,24 @@ export async function fetchRecordById(id: string) {
 }
 
 
-export async function updateEvent(id: number, event: EventType): Promise<EventType> {
-  const res = await fetch(`${API_PATH_EVENTS}?id=${id}`, {
+export async function updateEvent(
+  id: number,
+  updatedFields: Partial<EventType>
+): Promise<EventType> {
+  const res = await fetch(`${BASE_URL}/events?id=${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(event),
+    body: JSON.stringify(updatedFields),
   });
+
   if (!res.ok) {
-    throw new Error("Failed to update event")
+    const err = await res.json();
+    throw new Error(err.error || "Failed to update record");
   }
-  return res.json()
+
+  return res.json();
 }
+
 
 
 

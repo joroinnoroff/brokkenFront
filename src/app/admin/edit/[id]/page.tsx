@@ -26,14 +26,15 @@ export default async function ProductDetailsPage({ params }: PageProps) {
         Editing {isEvent ? "Event" : "Record"}: {item.name}
       </h1>
 
-      {item.image && (
-        <div className="h-32 w-32 relative">
-          <Image src={item.image} alt={item.name} fill style={{ objectFit: "cover" }} />
-        </div>
+
+
+
+      {isEvent ? (
+        <EditSelected item={item} type="record" />
+
+      ) : (
+        <EditSelected item={item} type="event" />
       )}
-
-      <EditSelected item={item} />
-
 
       <div className="mt-4">
         <p><strong>ID:</strong> {item.id}</p>
