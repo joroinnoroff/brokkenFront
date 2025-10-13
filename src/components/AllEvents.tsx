@@ -1,7 +1,7 @@
 "use client"
 
 import { EventType, fetchEvents } from '@/lib/api';
-import e from 'express';
+
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react'
 
