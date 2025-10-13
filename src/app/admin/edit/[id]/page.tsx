@@ -1,4 +1,4 @@
-import { fetchEventById, fetchRecordById } from "@/lib/api";
+import { fetchEventById, fetchRecordById, updateEvent, updateRecord } from "@/lib/api";
 import Image from "next/image";
 import EditSelected from "../../components/EditSelected";
 
@@ -30,10 +30,23 @@ export default async function ProductDetailsPage({ params }: PageProps) {
 
 
       {isEvent ? (
-        <EditSelected item={item} type="record" />
-
+        <EditSelected
+          item={item}
+          type="record"
+          onSave={async (data) => {
+            await updateRecord(data.id!, data);
+            alert("Record updated!");
+          }}
+        />
       ) : (
-        <EditSelected item={item} type="event" />
+        <EditSelected
+          item={item}
+          type="event"
+          onSave={async (data) => {
+            await updateEvent(data.id!, data);
+            alert("Event updated!");
+          }}
+        />
       )}
 
       <div className="mt-4">
