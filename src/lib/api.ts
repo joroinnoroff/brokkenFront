@@ -64,7 +64,7 @@ export async function updateEvent(
 
   if (!res.ok) {
     const err = await res.json();
-    throw new Error(err.error || "Failed to update record");
+    throw new Error(err.error || "Failed to update event");
   }
 
   return res.json();

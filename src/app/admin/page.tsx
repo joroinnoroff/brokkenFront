@@ -58,7 +58,7 @@ export default function AdminPage() {
                 </div>
                 <div>
                   <p>{e.name}</p>
-                  <p>{e.location} kr</p>
+                  <p>{e.location} </p>
                 </div>
                 <button className="ml-auto text-red-500" onClick={() => handleDeleteRecord(e.id!)}>
                   Delete
