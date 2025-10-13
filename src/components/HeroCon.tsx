@@ -7,7 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 export default function HeroCon() {
-  const [fontSize, setFontSize] = useState(200);
+
 
   const [showContent, setShowContent] = useState(false);
   useEffect(() => {
@@ -29,7 +29,7 @@ export default function HeroCon() {
               baseIntensity={0.1}
               hoverIntensity={2}
               enableHover={false}
-              fontSize={50}
+              fontSize={20}
             >
               Brokken Records
             </FuzzyText>

@@ -16,7 +16,10 @@ export default function Home() {
             <Vinyl />
           </div>
 
-
+          <div className="absolute right-10 bottom-5 flex gap-8 items-center">
+            <Link href={"/"}>Contact</Link>
+            <Link href={"/"}>Terms</Link>
+          </div>
         </div>
       </main>
 
