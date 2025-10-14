@@ -1,7 +1,7 @@
 
 import HeroCon from "@/components/HeroCon";
 import Vinyl from "@/components/Vinyl";
-import Link from "next/link";
+
 
 export default function Home() {
   return (
@@ -16,10 +16,7 @@ export default function Home() {
             <Vinyl />
           </div>
 
-          <div className="absolute right-10 bottom-5 flex gap-8 items-center">
-            <Link href={"/"}>Contact</Link>
-            <Link href={"/"}>Terms</Link>
-          </div>
+
         </div>
       </main>
 
