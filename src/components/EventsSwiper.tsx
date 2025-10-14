@@ -4,10 +4,10 @@ import React, { useState } from 'react'
 
 interface SwiperProps {
   images: string[];
-  className?: string;
+
 }
 
-const EventsSwiper: React.FC<SwiperProps> = ({ images, className = '' }) => {
+const EventsSwiper: React.FC<SwiperProps> = ({ images }) => {
 
   const [current, setCurrent] = useState(0);
   const [isFocus, setIsFocus] = useState(false);
@@ -29,9 +29,12 @@ const EventsSwiper: React.FC<SwiperProps> = ({ images, className = '' }) => {
     return null;
   }
   return <div className='relative'>
-    <MotionConfig>
+    <MotionConfig transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}>
       <AnimatePresence>
-        <motion.div>
+        <motion.div
+          className="relative w-full overflow-hidden"
+          onMouseEnter={() => setIsFocus(true)}
+          onMouseLeave={() => setIsFocus(false)}>
           {isFocus && images.length > 1 && (
             <>
               {current > 0 && (
