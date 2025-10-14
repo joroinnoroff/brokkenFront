@@ -35,7 +35,7 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen w-full px-8 pt-20">
       <div className="flex gap-12 items-center my-12 border-b pb-5">
-        <AddEvent onSubmit={handleNewEvent} />
+
         <AddRecord onSubmit={handleNewRecord} />
       </div>
       <div>
@@ -45,9 +45,9 @@ export default function AdminPage() {
             <Link href={`/admin/edit/${e.id}`} key={e.id}>
               <li key={e.id} className="flex items-center gap-4">
                 <div className="relative h-12 w-12">
-                  {e.image ? (
+                  {e.image && e.image.length > 0 ? (
                     <Image
-                      src={e.image}
+                      src={e.image[0]}
                       alt={e.name}
                       fill
                       style={{ objectFit: "cover" }}
@@ -77,9 +77,9 @@ export default function AdminPage() {
             <Link href={`/admin/edit/${r.id}`} key={r.id}>
               <li key={r.id} className="flex items-center gap-4">
                 <div className="relative h-12 w-12">
-                  {r.image ? (
+                  {r.image && r.image.length > 0 ? (
                     <Image
-                      src={r.image}
+                      src={r.image[0]}
                       alt={r.name}
                       fill
                       style={{ objectFit: "cover" }}

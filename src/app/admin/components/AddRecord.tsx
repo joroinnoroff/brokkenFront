@@ -8,10 +8,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import Image from "next/image";
+
 
 interface RecordData {
   name: string;
-  image: string;
+  image: string[];
   release_date: string;
   price: number;
   description: string;
@@ -24,7 +26,7 @@ interface AddRecordProps {
 export default function AddRecord({ onSubmit }: AddRecordProps) {
   const [formData, setFormData] = useState<RecordData>({
     name: "",
-    image: "",
+    image: [],
     release_date: "",
     price: 0,
     description: "",
@@ -66,7 +68,7 @@ export default function AddRecord({ onSubmit }: AddRecordProps) {
       return;
     }
     onSubmit(formData);
-    setFormData({ name: "", image: "", release_date: "", price: 0, description: "" });
+    setFormData({ name: "", image: [], release_date: "", price: 0, description: "" });
   };
 
   return (
@@ -82,7 +84,18 @@ export default function AddRecord({ onSubmit }: AddRecordProps) {
           <input name="name" value={formData.name} onChange={handleChange} placeholder="Name" />
           <input type="file" onChange={handleFileChange} />
           {uploading && <p>Uploading...</p>}
-          {formData.image && <p className="text-sm text-green-600">Uploaded successfully!</p>}
+          {formData.image && formData.image.length &&
+            <>
+              {formData.image.map((img, idx) => (
+
+                <Image src={img} alt={formData.name} key={idx} />
+              ))}
+              <p className="text-sm text-green-600">Uploaded successfully!</p>
+            </>
+          }
+
+
+
           <input type="date" name="release_date" value={formData.release_date} onChange={handleChange} />
           <input type="number" name="price" value={formData.price} onChange={handleChange} placeholder="Price" />
           <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description" />
