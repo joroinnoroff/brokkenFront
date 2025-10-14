@@ -1,5 +1,5 @@
 import { fetchEventById, fetchRecordById } from "@/lib/api";
-import Image from "next/image";
+
 import EditSelected from "../../components/EditSelected";
 
 type PageProps = {

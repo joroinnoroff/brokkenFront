@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
+import { AnimatePresence, motion, MotionConfig, PanInfo } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import React, { useState } from 'react'
 
@@ -13,8 +13,12 @@ const EventsSwiper: React.FC<SwiperProps> = ({ images }) => {
   const [isFocus, setIsFocus] = useState(false);
 
   // Handler to update current index based on drag direction
-  const handleDragEnd = (event: any, info: any) => {
-    const swipeThreshold = 15; // Lower threshold for easier swiping
+
+  const handleDragEnd = (
+    _event: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo
+  ) => {
+    const swipeThreshold = 15;
     const velocity = info.velocity.x;
     const offset = info.offset.x;
 
@@ -24,6 +28,7 @@ const EventsSwiper: React.FC<SwiperProps> = ({ images }) => {
       setCurrent(current - 1);
     }
   };
+
 
   if (images.length === 0) {
     return null;
