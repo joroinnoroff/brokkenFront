@@ -8,10 +8,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import Image from "next/image";
 
 interface EventData {
   name: string;
-  image: string;
+  image: string[];
   start_date: string;
   end_date: string;
   location: string;
@@ -27,7 +28,7 @@ interface AddEventProps {
 export default function AddEvent({ onSubmit }: AddEventProps) {
   const [formData, setFormData] = useState<EventData>({
     name: "",
-    image: "",
+    image: [],
     start_date: "",
     end_date: "",
     location: "",
@@ -57,7 +58,7 @@ export default function AddEvent({ onSubmit }: AddEventProps) {
       });
       if (!res.ok) throw new Error("Upload failed");
       const data = await res.json();
-      setFormData(prev => ({ ...prev, image: data.url }));
+      setFormData(prev => ({ ...prev, image: [...prev.image, data.url] }));
     } catch (err) {
       console.error(err);
       alert("Image upload failed!");
@@ -72,7 +73,7 @@ export default function AddEvent({ onSubmit }: AddEventProps) {
       return;
     }
     onSubmit(formData);
-    setFormData({ name: "", image: "", start_date: "", end_date: "", location: "", description: "" });
+    setFormData({ name: "", image: [], start_date: "", end_date: "", location: "", description: "" });
   };
 
   return (
@@ -88,8 +89,34 @@ export default function AddEvent({ onSubmit }: AddEventProps) {
           <input name="name" value={formData.name} onChange={handleChange} placeholder="Name" />
           <input type="file" onChange={handleFileChange} />
           {uploading && <p>Uploading...</p>}
-          {formData.image && <p className="text-sm text-green-600">Uploaded successfully!</p>}
+          {formData.image && formData.image.length &&
+            <>
+              <div className="grid grid-cols-3 h-32 w-32">
 
+                <div className="flex w-52">
+                  {formData.image.map((img, idx) => (
+                    <div key={idx} className="relative w-24 h-24 border rounded overflow-hidden">
+                      <Image src={img} alt={`upload-${idx}`} fill style={{ objectFit: "cover" }} />
+                      <button
+                        onClick={() => setFormData(prev => ({
+                          ...prev,
+                          image: prev.image.filter((_, i) => i !== idx)
+                        }))}
+                        className="absolute  top-1 right-1 bg-black text-white text-xs px-1 rounded"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+
+
+                </div>
+
+
+              </div>
+              <p className="text-sm text-green-600">Uploaded successfully!</p>
+            </>
+          }
 
           <input type="location" name="location" value={formData.location} onChange={handleChange} />
           <input type="date" name="start_date" value={formData.start_date} onChange={handleChange} />

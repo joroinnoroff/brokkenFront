@@ -35,7 +35,7 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen w-full px-8 pt-20">
       <div className="flex gap-12 items-center my-12 border-b pb-5">
-
+        <AddEvent onSubmit={handleNewEvent} />
         <AddRecord onSubmit={handleNewRecord} />
       </div>
       <div>

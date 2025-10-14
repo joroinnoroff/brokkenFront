@@ -53,7 +53,7 @@ export default function AddRecord({ onSubmit }: AddRecordProps) {
       });
       if (!res.ok) throw new Error("Upload failed");
       const data = await res.json();
-      setFormData(prev => ({ ...prev, image: data.url }));
+      setFormData(prev => ({ ...prev, image: [...prev.image, data.url] }));
     } catch (err) {
       console.error(err);
       alert("Image upload failed!");
@@ -86,10 +86,29 @@ export default function AddRecord({ onSubmit }: AddRecordProps) {
           {uploading && <p>Uploading...</p>}
           {formData.image && formData.image.length &&
             <>
-              {formData.image.map((img, idx) => (
+              <div className="grid grid-cols-3 h-32 w-32">
 
-                <Image src={img} alt={formData.name} key={idx} />
-              ))}
+                <div className="flex w-52">
+                  {formData.image.map((img, idx) => (
+                    <div key={idx} className="relative w-24 h-24 border rounded overflow-hidden">
+                      <Image src={img} alt={`upload-${idx}`} fill style={{ objectFit: "cover" }} />
+                      <button
+                        onClick={() => setFormData(prev => ({
+                          ...prev,
+                          image: prev.image.filter((_, i) => i !== idx)
+                        }))}
+                        className="absolute  top-1 right-1 bg-black text-white text-xs px-1 rounded"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+
+
+                </div>
+
+
+              </div>
               <p className="text-sm text-green-600">Uploaded successfully!</p>
             </>
           }
