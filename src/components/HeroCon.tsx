@@ -29,7 +29,7 @@ export default function HeroCon() {
               baseIntensity={0.1}
               hoverIntensity={2}
               enableHover={false}
-              fontSize={20}
+              fontSize={25}
             >
               Brokken Records
             </FuzzyText>
