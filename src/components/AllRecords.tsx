@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react'
 interface RecordType {
   id?: number;
   name: string;
-  image: string;
+  image: string[];
   release_date: string;
   price: number;
   description: string;
@@ -39,9 +39,9 @@ export default function AllRecords() {
         {records.map((record, index) => (
           <div key={index} className='flex items-center gap-12 my-8'>
             <div className="relative h-28 w-28">
-              {record.image ? (
+              {record.image && record.image.length > 0 ? (
                 <Image
-                  src={record.image}
+                  src={record.image[0]}
                   alt={record.name}
                   fill
                   style={{ objectFit: "cover" }}

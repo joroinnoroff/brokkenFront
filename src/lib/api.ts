@@ -5,7 +5,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://sbrokken-back.vercel
 export interface RecordType {
   id?: number;
   name: string;
-  image: string;
+  image: string[];
   release_date: string;
   price: number;
   description: string;
@@ -14,7 +14,7 @@ export interface RecordType {
 export interface EventType {
   id?: number;
   name: string;
-  image: string;
+  image: string[];
   start_date: string;
   end_date: string;
   location: string;

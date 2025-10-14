@@ -21,9 +21,9 @@ export default function AllEvents() {
       {events.map((ev, index) => (
         <div key={index} className=' space-y-4 '>
           <div className="relative min-h-[500px] min-w-full lg:min-w-[400px] my-4">
-            {ev.image ? (
+            {ev.image && ev.image.length > 0 ? (
               <Image
-                src={ev.image}
+                src={ev.image[0]}
                 alt={ev.name}
                 fill
                 style={{ objectFit: "contain" }}
