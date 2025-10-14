@@ -40,7 +40,7 @@ export default function EditSelected({ item }: EditSelectedProps) {
     }
   };
 
-  const handleClearImage = () => setFormData(prev => ({ ...prev, image: "" }));
+  const handleClearImage = () => setFormData(prev => ({ ...prev, image: [] }));
 
   const handleSubmit = async () => {
     try {
@@ -130,9 +130,9 @@ export default function EditSelected({ item }: EditSelectedProps) {
 
       {/* Image preview / upload */}
       <div className="flex flex-col gap-2 mt-2">
-        {formData.image && (
+        {formData.image && formData.image.length && (
           <div className="relative h-32 w-32">
-            <Image src={formData.image} alt={formData.name ?? ""} fill style={{ objectFit: "cover" }} />
+            <Image src={formData.image[0]} alt={formData.name ?? ""} fill style={{ objectFit: "cover" }} />
             <button
               onClick={handleClearImage}
               className="absolute top-0 right-0 bg-red-500 text-white px-2 py-1 rounded text-xs"

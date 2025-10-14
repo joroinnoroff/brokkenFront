@@ -5,7 +5,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export interface RecordType {
   id?: number;
   name?: string;
-  image?: string;
+  image?: string[];
   release_date?: string;
   price?: number;
   description?: string;
