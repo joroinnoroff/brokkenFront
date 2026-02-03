@@ -59,7 +59,7 @@ export default function HeroCon() {
                 Tromsø
               </p>
             </div>
-            <div className="ctas mt-20  flex gap-20 mr-auto">
+            <div className="ctas lg:mt-20  flex gap-20 mr-auto">
               <Link href={"/records"} className=" border rounded-full px-8 py-3">
                 Records
               </Link>
