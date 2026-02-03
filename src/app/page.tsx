@@ -6,7 +6,7 @@ import Vinyl from "@/components/Vinyl";
 export default function Home() {
   return (
     <div className=" min-h-screen pt-20 w-full">
-      <main className=" ">
+      <main className=" h-full ">
         <div className=" w-full ">
           <div className="absolute top-20 right-0 md:right-10 lg:right-52 xl:right-90 z-50 mix-blend-exclusion text-white px-0 pl-3 lg:pl-0 lg:px-3">
             <HeroCon />
