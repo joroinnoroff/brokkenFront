@@ -56,11 +56,20 @@ export async function POST(req: NextRequest) {
   });
 
   const recordIds: number[] = [];
+
   for (const item of lineItems.data) {
     const product = item.price?.product;
-    if (product && typeof product === "object" && product.metadata?.record_id) {
-      const id = parseInt(product.metadata.record_id as string, 10);
-      if (!Number.isNaN(id)) recordIds.push(id);
+
+    if (
+      product &&
+      typeof product === "object" &&
+      !("deleted" in product) &&
+      product.metadata?.record_id
+    ) {
+      const id = parseInt(product.metadata.record_id, 10);
+      if (!Number.isNaN(id)) {
+        recordIds.push(id);
+      }
     }
   }
 
