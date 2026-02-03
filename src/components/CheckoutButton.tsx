@@ -80,6 +80,7 @@ export default function CheckoutButton() {
 
   return (
     <div className="mt-8 space-y-2">
+
       <button
         type="button"
         onClick={handleCheckout}
