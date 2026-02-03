@@ -12,8 +12,39 @@ interface RecordType {
   price: number;
   description: string;
 }
+
+interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+function getOrCreateCartUserId() {
+  if (typeof document === "undefined") return "";
+
+  const cookieName = "cartUserId";
+  const cookies = document.cookie.split("; ").filter(Boolean);
+  const existing = cookies.find((cookie) => cookie.startsWith(`${cookieName}=`));
+
+  if (existing) {
+    return existing.split("=")[1];
+  }
+
+  const id =
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+  const oneYearInSeconds = 60 * 60 * 24 * 365;
+  document.cookie = `${cookieName}=${id}; path=/; max-age=${oneYearInSeconds}`;
+
+  return id;
+}
+
 export default function AllRecords() {
   const [records, setRecords] = useState<RecordType[]>([]);
+  const [justAddedId, setJustAddedId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchRecords().then(setRecords).catch(console.error);
@@ -30,6 +61,46 @@ export default function AllRecords() {
       currency: "NOK",
       minimumFractionDigits: 0
     }).format(price); // Output: 500 kr
+  }
+
+  function handleAddToCart(record: RecordType) {
+    if (typeof window === "undefined") return;
+    if (!record.id) return;
+
+    const userId = getOrCreateCartUserId();
+    if (!userId) return;
+
+    const storageKey = `cart_${userId}`;
+    const existing = window.localStorage.getItem(storageKey);
+    let cart: CartItem[] = [];
+
+    if (existing) {
+      try {
+        cart = JSON.parse(existing) as CartItem[];
+      } catch {
+        cart = [];
+      }
+    }
+
+    const index = cart.findIndex((item) => item.id === record.id);
+
+    if (index >= 0) {
+      cart[index].quantity += 1;
+    } else {
+      cart.push({
+        id: record.id,
+        name: record.name,
+        price: record.price,
+        quantity: 1,
+      });
+    }
+
+    window.localStorage.setItem(storageKey, JSON.stringify(cart));
+    setJustAddedId(record.id);
+
+    setTimeout(() => {
+      setJustAddedId((current) => (current === record.id ? null : current));
+    }, 1000);
   }
 
   return (
@@ -55,7 +126,12 @@ export default function AllRecords() {
               <p className='text-xs font-light'>Released: {formatDate(record.release_date)}</p>
               <p className='font-light'>{record.name}</p>
               <p className='mt-4'>{formatPrice(record.price)}</p>
-              <button>Add to cart</button>
+              <button
+                className='mt-2 rounded bg-black px-4 py-2 text-xs font-medium text-white'
+                onClick={() => handleAddToCart(record)}
+              >
+                {record.id && justAddedId === record.id ? "Added" : "Add to cart"}
+              </button>
             </div>
           </div>
         ))}
