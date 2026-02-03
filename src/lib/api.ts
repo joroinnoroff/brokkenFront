@@ -9,6 +9,7 @@ export interface RecordType {
   release_date: string;
   price: number;
   description: string;
+  genre?: string[];
 }
 
 export interface EventType {

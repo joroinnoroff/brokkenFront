@@ -33,10 +33,18 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const cart: CartItem[] = Array.isArray(body?.cart) ? body.cart : [];
+    const purchaseUuid = typeof body?.purchase_uuid === "string" ? body.purchase_uuid.trim() : null;
 
     if (!cart.length) {
       return NextResponse.json(
         { error: "Cart is empty." },
+        { status: 400 }
+      );
+    }
+
+    if (!purchaseUuid) {
+      return NextResponse.json(
+        { error: "Missing purchase_uuid (user/cart UUID)." },
         { status: 400 }
       );
     }
@@ -47,6 +55,9 @@ export async function POST(req: NextRequest) {
         currency: "nok",
         product_data: {
           name: item.name,
+          metadata: {
+            record_id: String(item.id),
+          },
         },
         unit_amount: Math.round(item.price * 100),
       },
@@ -59,6 +70,7 @@ export async function POST(req: NextRequest) {
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
+      client_reference_id: purchaseUuid,
       line_items: lineItems,
       success_url: `${origin}/success`,
       cancel_url: `${origin}/cancel`,

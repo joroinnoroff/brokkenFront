@@ -1,141 +1,141 @@
-"use client"
+"use client";
 
-import { fetchRecords } from '@/lib/api';
-import Image from 'next/image';
-import React, { useEffect, useState } from 'react'
-
-interface RecordType {
-  id?: number;
-  name: string;
-  image: string[];
-  release_date: string;
-  price: number;
-  description: string;
-}
-
-interface CartItem {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-}
-
-function getOrCreateCartUserId() {
-  if (typeof document === "undefined") return "";
-
-  const cookieName = "cartUserId";
-  const cookies = document.cookie.split("; ").filter(Boolean);
-  const existing = cookies.find((cookie) => cookie.startsWith(`${cookieName}=`));
-
-  if (existing) {
-    return existing.split("=")[1];
-  }
-
-  const id =
-    typeof crypto !== "undefined" && "randomUUID" in crypto
-      ? crypto.randomUUID()
-      : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-
-  const oneYearInSeconds = 60 * 60 * 24 * 365;
-  document.cookie = `${cookieName}=${id}; path=/; max-age=${oneYearInSeconds}`;
-
-  return id;
-}
+import { fetchRecords, type RecordType } from "@/lib/api";
+import { getCart, setCart, CART_UPDATED_EVENT } from "@/lib/cart";
+import Image from "next/image";
+import React, { useEffect, useState } from "react";
 
 export default function AllRecords() {
   const [records, setRecords] = useState<RecordType[]>([]);
-  const [justAddedId, setJustAddedId] = useState<number | null>(null);
+  const [cartIds, setCartIds] = useState<Set<number>>(new Set());
+  const [selectedGenre, setSelectedGenre] = useState<string>("");
+
+  function refreshCartIds() {
+    const cart = getCart();
+    setCartIds(new Set(cart.map((i) => i.id)));
+  }
 
   useEffect(() => {
     fetchRecords().then(setRecords).catch(console.error);
   }, []);
 
+  useEffect(() => {
+    refreshCartIds();
+    const handler = () => refreshCartIds();
+    window.addEventListener(CART_UPDATED_EVENT, handler);
+    return () => window.removeEventListener(CART_UPDATED_EVENT, handler);
+  }, []);
+
+  const genres = Array.from(
+    new Set(records.flatMap((r) => r.genre ?? []))
+  ).sort();
+  const filteredRecords =
+    selectedGenre === ""
+      ? records
+      : records.filter((r) => r.genre?.includes(selectedGenre));
+
   function formatDate(dateString: string) {
     const date = new Date(dateString);
-    return date.toLocaleDateString("no-NO"); // Output: 10.10.2007
+    return date.toLocaleDateString("no-NO");
   }
 
   function formatPrice(price: number) {
     return new Intl.NumberFormat("no-NO", {
       style: "currency",
       currency: "NOK",
-      minimumFractionDigits: 0
-    }).format(price); // Output: 500 kr
+      minimumFractionDigits: 0,
+    }).format(price);
   }
 
   function handleAddToCart(record: RecordType) {
-    if (typeof window === "undefined") return;
-    if (!record.id) return;
-
-    const userId = getOrCreateCartUserId();
-    if (!userId) return;
-
-    const storageKey = `cart_${userId}`;
-    const existing = window.localStorage.getItem(storageKey);
-    let cart: CartItem[] = [];
-
-    if (existing) {
-      try {
-        cart = JSON.parse(existing) as CartItem[];
-      } catch {
-        cart = [];
-      }
-    }
-
-    const index = cart.findIndex((item) => item.id === record.id);
-
-    if (index >= 0) {
-      cart[index].quantity += 1;
-    } else {
-      cart.push({
-        id: record.id,
-        name: record.name,
-        price: record.price,
-        quantity: 1,
-      });
-    }
-
-    window.localStorage.setItem(storageKey, JSON.stringify(cart));
-    setJustAddedId(record.id);
-
-    setTimeout(() => {
-      setJustAddedId((current) => (current === record.id ? null : current));
-    }, 1000);
+    const id = record.id;
+    if (typeof window === "undefined" || id == null || cartIds.has(id)) return;
+    const cart = getCart();
+    cart.push({
+      id,
+      name: record.name,
+      price: record.price,
+      quantity: 1,
+    });
+    setCart(cart);
+    setCartIds((prev) => new Set(prev).add(id));
   }
 
   return (
-    <div className='w-full h-full  '>
-      <span>({records.length})</span>
-      <div className='grid   lg:grid-cols-2 items-center lg:justify-items-center'>
-        {records.map((record, index) => (
-          <div key={index} className='flex items-center gap-12 my-8'>
-            <div className="relative h-28 w-28">
-              {record.image && record.image.length > 0 ? (
-                <Image
-                  src={record.image[0]}
-                  alt={record.name}
-                  fill
-                  style={{ objectFit: "cover" }}
-                />
-              ) : (
-                <div className="h-12 w-12 bg-gray-200" />
-              )}
-            </div>
-            <div>
+    <div className="w-full h-full">
+      {/* Genre filter */}
+      {genres.length > 0 && (
+        <div className="mb-6 flex flex-wrap items-center gap-2">
+          <span className="text-sm text-gray-500">Filter by type:</span>
+          <button
+            type="button"
+            onClick={() => setSelectedGenre("")}
+            className={`rounded-full px-3 py-1 text-sm ${
+              selectedGenre === ""
+                ? "bg-black text-white"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+          >
+            All
+          </button>
+          {genres.map((genre) => (
+            <button
+              key={genre}
+              type="button"
+              onClick={() => setSelectedGenre(genre)}
+              className={`rounded-full px-3 py-1 text-sm ${
+                selectedGenre === genre
+                  ? "bg-black text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              {genre}
+            </button>
+          ))}
+        </div>
+      )}
 
-              <p className='text-xs font-light'>Released: {formatDate(record.release_date)}</p>
-              <p className='font-light'>{record.name}</p>
-              <p className='mt-4'>{formatPrice(record.price)}</p>
-              <button
-                className='mt-2 rounded bg-black px-4 py-2 text-xs font-medium text-white'
-                onClick={() => handleAddToCart(record)}
-              >
-                {record.id && justAddedId === record.id ? "Added" : "Add to cart"}
-              </button>
+      <span>({filteredRecords.length})</span>
+      <div className="grid lg:grid-cols-2 items-center lg:justify-items-center">
+        {filteredRecords.map((record, index) => {
+          const inCart = record.id != null && cartIds.has(record.id);
+          return (
+            <div key={record.id ?? index} className="flex items-center gap-12 my-8">
+              <div className="relative h-28 w-28 shrink-0">
+                {record.image?.length ? (
+                  <Image
+                    src={record.image[0]}
+                    alt={record.name}
+                    fill
+                    style={{ objectFit: "cover" }}
+                  />
+                ) : (
+                  <div className="h-28 w-28 bg-gray-200" />
+                )}
+              </div>
+              <div>
+                <p className="text-xs font-light">
+                  Released: {formatDate(record.release_date)}
+                </p>
+                {record.genre?.length ? (
+                  <p className="text-xs font-light text-gray-500">
+                    {record.genre.join(", ")}
+                  </p>
+                ) : null}
+                <p className="font-light">{record.name}</p>
+                <p className="mt-4">{formatPrice(record.price)}</p>
+                <button
+                  className="mt-2 rounded bg-black px-4 py-2 text-xs font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  onClick={() => handleAddToCart(record)}
+                  disabled={inCart}
+                >
+                  {inCart ? "In cart" : "Add to cart"}
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
-  )
+  );
 }
