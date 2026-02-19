@@ -2,6 +2,7 @@
 
 import { fetchRecords, type RecordType } from "@/lib/api";
 import { getCart, setCart, CART_UPDATED_EVENT } from "@/lib/cart";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
@@ -9,6 +10,9 @@ export default function AllRecords() {
   const [records, setRecords] = useState<RecordType[]>([]);
   const [cartIds, setCartIds] = useState<Set<number>>(new Set());
   const [selectedGenre, setSelectedGenre] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+
+
 
   function refreshCartIds() {
     const cart = getCart();
@@ -16,7 +20,9 @@ export default function AllRecords() {
   }
 
   useEffect(() => {
-    fetchRecords().then(setRecords).catch(console.error);
+
+    setLoading(true);
+    fetchRecords().then(setRecords).catch(console.error).finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
@@ -60,6 +66,10 @@ export default function AllRecords() {
     setCart(cart);
     setCartIds((prev) => new Set(prev).add(id));
   }
+
+  if (loading) return <div className="w-full h-full flex items-center justify-center">
+    <Loader2 className="w-10 h-10 animate-spin" />
+  </div>;
 
   return (
     <div className="w-full h-full">
