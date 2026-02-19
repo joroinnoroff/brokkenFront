@@ -89,7 +89,10 @@ export async function createEvent(event: EventType): Promise<EventType> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(event),
   });
-  if (!res.ok) throw new Error("Failed to create event");
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error || "Failed to create event");
+  }
   return res.json();
 }
 
@@ -117,5 +120,11 @@ export async function updateRecord(
 export async function deleteRecord(id: number): Promise<RecordType> {
   const res = await fetch(`${API_PATH_RECORDS}?id=${id}`, { method: "DELETE" });
   if (!res.ok) throw new Error("Failed to delete record");
+  return res.json();
+}
+
+export async function deleteEvent(id: number): Promise<EventType> {
+  const res = await fetch(`${API_PATH_EVENTS}?id=${id}`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Failed to delete event");
   return res.json();
 }

@@ -12,6 +12,11 @@ const nextConfig = {
         hostname: "npsus.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "brokken-back.vercel.app",
+        pathname: "/**",
+      },
     ],
   },
 };

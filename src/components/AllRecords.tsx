@@ -2,7 +2,7 @@
 
 import { fetchRecords, type RecordType } from "@/lib/api";
 import { getCart, setCart, CART_UPDATED_EVENT } from "@/lib/cart";
-import { Loader2 } from "lucide-react";
+import { resolveImageUrl } from "@/lib/utils";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
@@ -10,7 +10,7 @@ export default function AllRecords() {
   const [records, setRecords] = useState<RecordType[]>([]);
   const [cartIds, setCartIds] = useState<Set<number>>(new Set());
   const [selectedGenre, setSelectedGenre] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
 
 
@@ -67,9 +67,25 @@ export default function AllRecords() {
     setCartIds((prev) => new Set(prev).add(id));
   }
 
-  if (loading) return <div className="w-full h-full flex items-center justify-center">
-    <Loader2 className="w-10 h-10 animate-spin" />
-  </div>;
+  if (loading) {
+    return (
+      <div className="w-full h-full">
+        <div className="grid lg:grid-cols-2 gap-8 items-center lg:justify-items-center">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="flex items-center gap-12 my-8 animate-pulse">
+              <div className="h-28 w-28 shrink-0 bg-gray-200 rounded" />
+              <div className="flex-1 space-y-2">
+                <div className="h-3 bg-gray-200 rounded w-1/4" />
+                <div className="h-4 bg-gray-200 rounded w-2/3" />
+                <div className="h-4 bg-gray-200 rounded w-1/2" />
+                <div className="h-6 bg-gray-200 rounded w-1/3 mt-4" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-full">
@@ -109,12 +125,13 @@ export default function AllRecords() {
       <div className="grid lg:grid-cols-2 items-center lg:justify-items-center">
         {filteredRecords.map((record, index) => {
           const inCart = record.id != null && cartIds.has(record.id);
+          const imgSrc = record.image?.[0] ? resolveImageUrl(record.image[0]) : "";
           return (
             <div key={record.id ?? index} className="flex items-center gap-12 my-8">
               <div className="relative h-28 w-28 shrink-0">
-                {record.image?.length ? (
+                {imgSrc ? (
                   <Image
-                    src={record.image[0]}
+                    src={imgSrc}
                     alt={record.name}
                     fill
                     style={{ objectFit: "cover" }}

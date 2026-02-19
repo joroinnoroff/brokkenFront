@@ -18,7 +18,7 @@ export async function GET(request: Request): Promise<NextResponse> {
 
     // If ID is provided, fetch a single record
     if (id) {
-      const res = await fetch(API_URL + '/events?=${id}');
+      const res = await fetch(`${API_URL}/events?id=${id}`);
       if (!res.ok) throw new Error(`Failed to fetch event with id ${id}`);
       const data = await res.json();
       return NextResponse.json(data);
@@ -39,19 +39,40 @@ export async function GET(request: Request): Promise<NextResponse> {
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
+    if (!API_URL) {
+      return NextResponse.json(
+        { error: "NEXT_PUBLIC_API_URL is not configured" },
+        { status: 500 }
+      );
+    }
     const event: EventType = await req.json();
-    const res = await fetch(`${API_URL}/events`, {
+    const backendUrl = API_URL.endsWith("/") ? `${API_URL}events` : `${API_URL}/events`;
+    const res = await fetch(backendUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(event),
     });
-    if (!res.ok) throw new Error("Failed to create event");
+    if (!res.ok) {
+      let backendError = "";
+      try {
+        const errBody = await res.json();
+        backendError = errBody?.error || errBody?.message || JSON.stringify(errBody);
+      } catch {
+        backendError = await res.text().catch(() => "");
+      }
+      return NextResponse.json(
+        {
+          error: backendError || `Backend returned ${res.status}`,
+          status: res.status,
+        },
+        { status: res.status >= 500 ? 502 : res.status }
+      );
+    }
     const data: EventType = await res.json();
     return NextResponse.json(data, { status: 201 });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Failed to create record";
-    const error: ErrorResponse = { error: message };
-    return NextResponse.json(error, { status: 500 });
+    const message = err instanceof Error ? err.message : "Failed to create event";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 

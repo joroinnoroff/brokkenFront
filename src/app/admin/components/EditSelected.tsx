@@ -2,13 +2,21 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { EventType, RecordType, updateEvent, updateRecord } from "@/lib/api";
+import { flattenImageUrls, resolveImageUrl } from "@/lib/utils";
 
 type EditSelectedProps = {
-  item: RecordType;
+  item: RecordType | EventType;
 };
 
+function normalizeImage(img: unknown): string[] {
+  return flattenImageUrls(img);
+}
+
 export default function EditSelected({ item }: EditSelectedProps) {
-  const [formData, setFormData] = useState<RecordType | EventType>(item);
+  const [formData, setFormData] = useState<RecordType | EventType>({
+    ...item,
+    image: normalizeImage(item.image),
+  });
   const [uploading, setUploading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -31,7 +39,10 @@ export default function EditSelected({ item }: EditSelectedProps) {
       });
       if (!res.ok) throw new Error("Upload failed");
       const data = await res.json();
-      setFormData(prev => ({ ...prev, image: data.url }));
+      setFormData((prev) => ({
+        ...prev,
+        image: [...normalizeImage(prev.image), data.url],
+      }));
     } catch (err) {
       console.error(err);
       alert("Image upload failed!");
@@ -40,7 +51,11 @@ export default function EditSelected({ item }: EditSelectedProps) {
     }
   };
 
-  const handleClearImage = () => setFormData(prev => ({ ...prev, image: [] }));
+  const handleRemoveImage = (index: number) =>
+    setFormData((prev) => ({
+      ...prev,
+      image: normalizeImage(prev.image).filter((_, i) => i !== index),
+    }));
 
   const handleSubmit = async () => {
     try {
@@ -90,13 +105,29 @@ export default function EditSelected({ item }: EditSelectedProps) {
 
       {/* Record fields */}
       {"release_date" in formData && (
-        <input
-          type="date"
-          name="release_date"
-          value={formatDate(formData.release_date)}
-          onChange={handleChange}
-          className="border px-2 py-1 w-full mt-2"
-        />
+        <>
+          <input
+            type="date"
+            name="release_date"
+            value={formatDate(formData.release_date)}
+            onChange={handleChange}
+            className="border px-2 py-1 w-full"
+          />
+          {"genre" in formData && (
+            <input
+              name="genre"
+              value={Array.isArray(formData.genre) ? formData.genre.join(", ") : ""}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  genre: e.target.value.split(",").map((g) => g.trim()).filter(Boolean),
+                }))
+              }
+              className="border px-2 py-1 w-full"
+              placeholder="Genres (comma-separated)"
+            />
+          )}
+        </>
       )}
 
       {/* Event fields */}
@@ -129,20 +160,38 @@ export default function EditSelected({ item }: EditSelectedProps) {
       )}
 
       {/* Image preview / upload */}
-      <div className="flex flex-col gap-2 mt-2">
-        {formData.image && formData.image.length && (
-          <div className="relative h-32 w-32">
-            <Image src={formData.image[0]} alt={formData.name ?? ""} fill style={{ objectFit: "cover" }} />
-            <button
-              onClick={handleClearImage}
-              className="absolute top-0 right-0 bg-red-500 text-white px-2 py-1 rounded text-xs"
-            >
-              Clear
-            </button>
+      <div className="flex flex-col gap-4 mt-2">
+        {normalizeImage(formData.image).length > 0 && (
+          <div className="flex flex-wrap gap-3">
+            {normalizeImage(formData.image).map((img, idx) => {
+              const src = resolveImageUrl(img);
+              return src ? (
+              <div key={idx} className="relative h-24 w-24 shrink-0">
+                <Image
+                  src={src}
+                  alt={`${formData.name ?? "Image"} ${idx + 1}`}
+                  fill
+                  style={{ objectFit: "cover" }}
+                  className="rounded border"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveImage(idx)}
+                  className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded p-1 text-xs hover:bg-red-600"
+                >
+                  x
+                </button>
+              </div>
+              ) : (
+                <div key={idx} className="flex h-24 w-24 items-center justify-center rounded border bg-gray-100 text-xs text-gray-500">
+                  Image
+                </div>
+              );
+            })}
           </div>
         )}
-        <input type="file" onChange={handleFileChange} />
-        {uploading && <p>Uploading...</p>}
+        <input type="file" onChange={handleFileChange} className="text-sm" />
+        {uploading && <p className="text-sm text-gray-500">Uploading...</p>}
       </div>
 
       <button
