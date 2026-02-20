@@ -49,8 +49,11 @@ function VinylModel() {
 
 export default function Vinyl() {
   return (
-    <div className="w-screen h-screen">
-      <Canvas camera={{ position: [0, 0, 12], fov: 35 }}>
+    <div className="absolute inset-0 w-full h-full">
+      <Canvas
+        camera={{ position: [0, 0, 18], fov: 45 }}
+        gl={{ alpha: true, antialias: true }}
+      >
         <ambientLight intensity={0.8} />
         <directionalLight position={[5, 5, 5]} intensity={0.8} />
         <VinylModel />

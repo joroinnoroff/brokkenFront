@@ -3,6 +3,7 @@
 import { fetchRecords, type RecordType } from "@/lib/api";
 import { getCart, setCart, CART_UPDATED_EVENT } from "@/lib/cart";
 import { resolveImageUrl } from "@/lib/utils";
+import GenreFilter from "@/components/GenreFilter";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
@@ -11,8 +12,6 @@ export default function AllRecords() {
   const [cartIds, setCartIds] = useState<Set<number>>(new Set());
   const [selectedGenre, setSelectedGenre] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
-
-
 
   function refreshCartIds() {
     const cart = getCart();
@@ -32,9 +31,6 @@ export default function AllRecords() {
     return () => window.removeEventListener(CART_UPDATED_EVENT, handler);
   }, []);
 
-  const genres = Array.from(
-    new Set(records.flatMap((r) => r.genre ?? []))
-  ).sort();
   const filteredRecords =
     selectedGenre === ""
       ? records
@@ -89,37 +85,11 @@ export default function AllRecords() {
 
   return (
     <div className="w-full h-full">
-      {/* Genre filter */}
-      {genres.length > 0 && (
-        <div className="mb-6 flex flex-wrap items-center gap-2">
-          <span className="text-sm text-gray-500">Filter by type:</span>
-          <button
-            type="button"
-            onClick={() => setSelectedGenre("")}
-            className={`rounded-full px-3 py-1 text-sm ${
-              selectedGenre === ""
-                ? "bg-black text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-          >
-            All
-          </button>
-          {genres.map((genre) => (
-            <button
-              key={genre}
-              type="button"
-              onClick={() => setSelectedGenre(genre)}
-              className={`rounded-full px-3 py-1 text-sm ${
-                selectedGenre === genre
-                  ? "bg-black text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
-            >
-              {genre}
-            </button>
-          ))}
-        </div>
-      )}
+      <GenreFilter
+        records={records}
+        selectedGenre={selectedGenre}
+        onGenreChange={setSelectedGenre}
+      />
 
       <span>({filteredRecords.length})</span>
       <div className="grid lg:grid-cols-2 items-center lg:justify-items-center">

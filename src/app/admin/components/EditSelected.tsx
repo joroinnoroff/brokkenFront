@@ -16,6 +16,11 @@ export default function EditSelected({ item }: EditSelectedProps) {
   const [formData, setFormData] = useState<RecordType | EventType>({
     ...item,
     image: normalizeImage(item.image),
+    ...("release_date" in item && {
+      genre: Array.isArray((item as RecordType).genre)
+        ? (item as RecordType).genre
+        : [],
+    }),
   });
   const [uploading, setUploading] = useState(false);
 
@@ -113,20 +118,26 @@ export default function EditSelected({ item }: EditSelectedProps) {
             onChange={handleChange}
             className="border px-2 py-1 w-full"
           />
-          {"genre" in formData && (
+          <div>
+            <label className="mb-1 block text-sm font-medium">Genres</label>
             <input
               name="genre"
-              value={Array.isArray(formData.genre) ? formData.genre.join(", ") : ""}
+              value={
+                Array.isArray(formData.genre) ? formData.genre.join(", ") : ""
+              }
               onChange={(e) =>
                 setFormData((prev) => ({
                   ...prev,
-                  genre: e.target.value.split(",").map((g) => g.trim()).filter(Boolean),
+                  genre: e.target.value
+                    .split(",")
+                    .map((g) => g.trim())
+                    .filter(Boolean),
                 }))
               }
               className="border px-2 py-1 w-full"
-              placeholder="Genres (comma-separated)"
+              placeholder="Jazz, Electronic, Experimental (comma-separated)"
             />
-          )}
+          </div>
         </>
       )}
 
