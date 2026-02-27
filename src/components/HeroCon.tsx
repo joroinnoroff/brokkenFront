@@ -22,19 +22,19 @@ export default function HeroCon() {
       className=""
     >
       <div className="  w-full flex-col min-h-full mt-12">
-        {[...Array(1)].map((_, i) => (
-          <div key={i} className=" uppercase">
-            <FuzzyText
-
-              baseIntensity={0.1}
-              hoverIntensity={2}
-              enableHover={false}
-              fontSize={25}
+   
+ 
+          <div className=" uppercase">
+            <h1 className="font-[Pinocchio] text-7xl"
+             
             >
               Brokken Records
-            </FuzzyText>
+            </h1>
           </div>
-        ))}
+       
+ 
+
+ 
       </div>
 
       <AnimatePresence>
@@ -54,7 +54,7 @@ export default function HeroCon() {
                 <span className=" opacity-80">- Opening hours</span>
                 Wed-Sat 14-19</p>
               <p className="ml-2 flex flex-col">
-                <span className="opacity-80">- Adress</span>
+                <span className="opacity-80">- Address</span>
                 Storgata 78
                 Tromsø
               </p>
