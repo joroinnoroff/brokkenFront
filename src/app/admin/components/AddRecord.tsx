@@ -11,6 +11,8 @@ import {
 import Image from "next/image";
 import { resolveImageUrl } from "@/lib/utils";
 
+type Availability = "Available" | "Sold";
+
 interface RecordData {
   name: string;
   image: string[];
@@ -18,6 +20,7 @@ interface RecordData {
   price: number;
   description: string;
   genre?: string[];
+  availability?: Availability;
 }
 
 interface AddRecordProps {
@@ -32,6 +35,7 @@ export default function AddRecord({ onSubmit }: AddRecordProps) {
     price: 0,
     description: "",
     genre: [],
+    availability: "Available",
   });
   const [genreInput, setGenreInput] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -73,8 +77,8 @@ export default function AddRecord({ onSubmit }: AddRecordProps) {
     const genre = genreInput
       ? genreInput.split(",").map((g) => g.trim()).filter(Boolean)
       : [];
-    onSubmit({ ...formData, genre });
-    setFormData({ name: "", image: [], release_date: "", price: 0, description: "", genre: [] });
+    onSubmit({ ...formData, genre, availability: formData.availability ?? "Available" });
+    setFormData({ name: "", image: [], release_date: "", price: 0, description: "", genre: [], availability: "Available" });
     setGenreInput("");
   };
 
@@ -146,6 +150,38 @@ export default function AddRecord({ onSubmit }: AddRecordProps) {
                 })}
               </div>
             )}
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium">Availability</label>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() =>
+                  setFormData((prev) => ({ ...prev, availability: "Available" }))
+                }
+                className={`rounded px-3 py-1.5 text-sm font-medium ${
+                  formData.availability !== "Sold"
+                    ? "bg-black text-white"
+                    : "border border-gray-300 bg-white text-gray-600 hover:bg-gray-50"
+                }`}
+              >
+                Available
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setFormData((prev) => ({ ...prev, availability: "Sold" }))
+                }
+                className={`rounded px-3 py-1.5 text-sm font-medium ${
+                  formData.availability === "Sold"
+                    ? "bg-black text-white"
+                    : "border border-gray-300 bg-white text-gray-600 hover:bg-gray-50"
+                }`}
+              >
+                Sold
+              </button>
+            </div>
           </div>
 
           <div>

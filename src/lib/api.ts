@@ -2,6 +2,8 @@ const API_PATH_RECORDS = "/api/records";
 const API_PATH_EVENTS = "/api/events";
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://sbrokken-back.vercel.app";
 
+export type RecordAvailability = "Available" | "Sold";
+
 export interface RecordType {
   id?: number;
   name: string;
@@ -10,6 +12,7 @@ export interface RecordType {
   price: number;
   description: string;
   genre?: string[];
+  availability?: RecordAvailability;
 }
 
 export interface EventType {

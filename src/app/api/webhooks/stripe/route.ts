@@ -1,10 +1,7 @@
 /**
- * Stripe webhook: on checkout.session.completed, creates purchase rows on your backend.
- * Uses the same UUID for: cart user (cookie), Stripe client_reference_id, and purchases.purchase_uuid.
- *
- * Backend contract: POST ${NEXT_PUBLIC_API_URL}/purchases
- * Body: { purchase_uuid: string (UUID), record_ids: number[] }
- * Insert one row per record_id: (record_id, purchase_uuid, created_at).
+ * Stripe webhook: handles checkout events.
+ * - checkout.session.completed: creates purchases, marks records as Sold
+ * - checkout.session.expired / payment_intent.payment_failed: logged (no record change)
  */
 import Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
@@ -40,6 +37,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: message }, { status: 400 });
   }
 
+  switch (event.type) {
+    case "checkout.session.expired":
+      console.log("[Stripe] checkout.session.expired", (event.data.object as Stripe.Checkout.Session).id);
+      return NextResponse.json({ received: true });
+    case "payment_intent.payment_failed":
+      console.log("[Stripe] payment_intent.payment_failed", (event.data.object as Stripe.PaymentIntent).id);
+      return NextResponse.json({ received: true });
+  }
+
   if (event.type !== "checkout.session.completed") {
     return NextResponse.json({ received: true });
   }
@@ -59,7 +65,6 @@ export async function POST(req: NextRequest) {
 
   for (const item of lineItems.data) {
     const product = item.price?.product;
-
     if (
       product &&
       typeof product === "object" &&
@@ -79,7 +84,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (!backendUrl) {
-    console.warn("NEXT_PUBLIC_API_URL not set; skipping purchase creation");
+    console.warn("NEXT_PUBLIC_API_URL not set; skipping backend updates");
     return NextResponse.json({ received: true });
   }
 
@@ -98,6 +103,21 @@ export async function POST(req: NextRequest) {
     }
   } catch (err) {
     console.error("Failed to create purchases on backend", err);
+  }
+
+  for (const recordId of recordIds) {
+    try {
+      const updateRes = await fetch(`${backendUrl}/records?id=${recordId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ availability: "Sold" }),
+      });
+      if (!updateRes.ok) {
+        console.error("Failed to mark record as Sold", recordId, await updateRes.text());
+      }
+    } catch (err) {
+      console.error("Failed to update record availability", recordId, err);
+    }
   }
 
   return NextResponse.json({ received: true });

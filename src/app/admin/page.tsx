@@ -5,26 +5,33 @@ import {
   createRecord,
   deleteRecord,
   deleteEvent,
+  updateRecord,
   RecordType,
   EventType,
   fetchEvents,
   createEvent,
 } from "@/lib/api";
 import AddRecord from "@/app/admin/components/AddRecord";
-import Image from "next/image";
 import AddEvent from "./components/AddEvent";
+import EditRecordModal from "./components/EditRecordModal";
+import EditEventModal from "./components/EditEventModal";
+import Image from "next/image";
 import { flattenImageUrls, resolveImageUrl } from "@/lib/utils";
-import Link from "next/link";
 
 export default function AdminPage() {
   const [records, setRecords] = useState<RecordType[]>([]);
   const [events, setEvents] = useState<EventType[]>([]);
+  const [editingRecord, setEditingRecord] = useState<RecordType | null>(null);
+  const [editingEvent, setEditingEvent] = useState<EventType | null>(null);
 
 
   useEffect(() => {
     fetchRecords().then(setRecords).catch(console.error);
-    fetchEvents().then(setEvents).catch(console.log)
+    fetchEvents().then(setEvents).catch(console.log);
   }, []);
+
+  const refreshRecords = () => fetchRecords().then(setRecords).catch(console.error);
+  const refreshEvents = () => fetchEvents().then(setEvents).catch(console.log);
 
   const handleNewRecord = async (record: Omit<RecordType, "id">) => {
     const res = await createRecord(record as RecordType);
@@ -40,6 +47,22 @@ export default function AdminPage() {
   const handleDeleteRecord = async (id: number) => {
     await deleteRecord(id);
     setRecords((prev) => prev.filter((r) => r.id !== id));
+  };
+
+  const handleToggleAvailability = async (record: RecordType) => {
+    const next: "Available" | "Sold" =
+      record.availability === "Sold" ? "Available" : "Sold";
+    try {
+      await updateRecord(record.id!, { ...record, availability: next });
+      setRecords((prev) =>
+        prev.map((r) =>
+          r.id === record.id ? { ...r, availability: next } : r
+        )
+      );
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update availability");
+    }
   };
 
   const handleDeleteEvent = async (id: number, e: React.MouseEvent) => {
@@ -79,12 +102,13 @@ export default function AdminPage() {
                 <p className="font-medium truncate">{e.name}</p>
                 <p className="text-sm text-gray-500 truncate">{e.location}</p>
               </div>
-              <Link
-                href={`/admin/edit/${e.id}`}
+              <button
+                type="button"
+                onClick={() => setEditingEvent(e)}
                 className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium hover:bg-gray-50"
               >
                 Edit
-              </Link>
+              </button>
               <button
                 className="text-red-500 hover:text-red-600 text-sm font-medium"
                 onClick={(ev) => handleDeleteEvent(e.id!, ev)}
@@ -119,14 +143,31 @@ export default function AdminPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-medium truncate">{r.name}</p>
-                <p className="text-sm text-gray-500">{r.price} kr</p>
+                <p className="text-sm text-gray-500">
+                  {r.price} kr
+                </p>
               </div>
-              <Link
-                href={`/admin/edit/${r.id}`}
-                className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium hover:bg-gray-50"
-              >
-                Edit
-              </Link>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleToggleAvailability(r)}
+                  className={`rounded px-2.5 py-1 text-xs font-medium ${
+                    r.availability === "Sold"
+                      ? "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                      : "bg-green-100 text-green-800 hover:bg-green-200"
+                  }`}
+                  title={r.availability === "Sold" ? "Mark as Available" : "Mark as Sold"}
+                >
+                  {r.availability === "Sold" ? "Sold" : "Available"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditingRecord(r)}
+                  className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium hover:bg-gray-50"
+                >
+                  Edit
+                </button>
+              </div>
               <button
                 className="text-red-500 hover:text-red-600 text-sm font-medium"
                 onClick={() => handleDeleteRecord(r.id!)}
@@ -139,7 +180,18 @@ export default function AdminPage() {
         </ul>
       </div>
 
-
+      <EditEventModal
+        event={editingEvent}
+        open={!!editingEvent}
+        onOpenChange={(open) => !open && setEditingEvent(null)}
+        onSuccess={refreshEvents}
+      />
+      <EditRecordModal
+        record={editingRecord}
+        open={!!editingRecord}
+        onOpenChange={(open) => !open && setEditingRecord(null)}
+        onSuccess={refreshRecords}
+      />
     </div>
   );
 }

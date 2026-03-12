@@ -10,6 +10,7 @@ export interface RecordType {
   price?: number;
   description?: string;
   genre?: string[];
+  availability?: "Available" | "Sold";
 }
 
 

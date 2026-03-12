@@ -38,7 +38,7 @@ export default function GenreFilter({
           key={genre}
           type="button"
           onClick={() => onGenreChange(genre)}
-          className={`rounded-full px-3 py-1 text-sm ${
+          className={`rounded-full px-3 py-1 text-sm cursor-pointer ${
             selectedGenre === genre
               ? "bg-black text-white"
               : "bg-gray-200 text-gray-700 hover:bg-gray-300"

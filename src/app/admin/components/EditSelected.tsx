@@ -1,28 +1,50 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { EventType, RecordType, updateEvent, updateRecord } from "@/lib/api";
 import { flattenImageUrls, resolveImageUrl } from "@/lib/utils";
 
 type EditSelectedProps = {
   item: RecordType | EventType;
+  onSuccess?: () => void;
 };
 
 function normalizeImage(img: unknown): string[] {
   return flattenImageUrls(img);
 }
 
-export default function EditSelected({ item }: EditSelectedProps) {
+function normalizeGenre(genre: unknown): string[] {
+  if (Array.isArray(genre)) return genre.filter((g): g is string => typeof g === "string");
+  if (typeof genre === "string" && genre.trim()) return [genre.trim()];
+  return [];
+}
+
+export default function EditSelected({ item, onSuccess }: EditSelectedProps) {
   const [formData, setFormData] = useState<RecordType | EventType>({
     ...item,
     image: normalizeImage(item.image),
     ...("release_date" in item && {
-      genre: Array.isArray((item as RecordType).genre)
-        ? (item as RecordType).genre
-        : [],
+      genre: normalizeGenre((item as RecordType).genre),
+      availability:
+        (item as RecordType).availability === "Sold" ? "Sold" : "Available",
     }),
   });
+  const [genreInput, setGenreInput] = useState(
+    Array.isArray((item as RecordType).genre) && "release_date" in item
+      ? (item as RecordType).genre!.join(", ")
+      : ""
+  );
   const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    if ("release_date" in item) {
+      setGenreInput(
+        Array.isArray((item as RecordType).genre)
+          ? (item as RecordType).genre!.join(", ")
+          : ""
+      );
+    }
+  }, [item]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -66,11 +88,17 @@ export default function EditSelected({ item }: EditSelectedProps) {
     try {
       if ("release_date" in formData) {
         // It's a Record
+        const genre = genreInput
+          ? genreInput.split(",").map((g) => g.trim()).filter(Boolean)
+          : [];
         const payload: Partial<RecordType> = {
           ...formData,
+          genre,
+          availability: (formData as RecordType).availability ?? "Available",
           release_date: formData.release_date?.split("T")[0] ?? "",
         };
         await updateRecord(item.id!, payload);
+        onSuccess?.();
       } else {
         // It's an Event
         const payload: Partial<EventType> = {
@@ -79,6 +107,7 @@ export default function EditSelected({ item }: EditSelectedProps) {
           end_date: formData.end_date?.split("T")[0] ?? "",
         };
         await updateEvent(item.id!, payload);
+        onSuccess?.();
       }
 
       alert("Updated successfully!");
@@ -108,9 +137,40 @@ export default function EditSelected({ item }: EditSelectedProps) {
         placeholder="Description"
       />
 
-      {/* Record fields */}
+      {/* Record fields - Availability first for prominence */}
       {"release_date" in formData && (
         <>
+          <div className="mb-2">
+            <label className="mb-1 block text-sm font-medium">Availability</label>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() =>
+                  setFormData((prev) => ({ ...prev, availability: "Available" }))
+                }
+                className={`rounded px-3 py-1.5 text-sm font-medium ${
+                  (formData as RecordType).availability === "Sold"
+                    ? "border border-gray-300 bg-white text-gray-600 hover:bg-gray-50"
+                    : "bg-black text-white"
+                }`}
+              >
+                Available
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setFormData((prev) => ({ ...prev, availability: "Sold" }))
+                }
+                className={`rounded px-3 py-1.5 text-sm font-medium ${
+                  (formData as RecordType).availability === "Sold"
+                    ? "bg-black text-white"
+                    : "border border-gray-300 bg-white text-gray-600 hover:bg-gray-50"
+                }`}
+              >
+                Sold
+              </button>
+            </div>
+          </div>
           <input
             type="date"
             name="release_date"
@@ -121,19 +181,8 @@ export default function EditSelected({ item }: EditSelectedProps) {
           <div>
             <label className="mb-1 block text-sm font-medium">Genres</label>
             <input
-              name="genre"
-              value={
-                Array.isArray(formData.genre) ? formData.genre.join(", ") : ""
-              }
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  genre: e.target.value
-                    .split(",")
-                    .map((g) => g.trim())
-                    .filter(Boolean),
-                }))
-              }
+              value={genreInput}
+              onChange={(e) => setGenreInput(e.target.value)}
               className="border px-2 py-1 w-full"
               placeholder="Jazz, Electronic, Experimental (comma-separated)"
             />
