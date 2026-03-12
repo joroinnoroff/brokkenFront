@@ -21,7 +21,7 @@ export default function HeroCon() {
 
       className=""
     >
-      <div className="  w-full flex-col min-h-full mt-12">
+      <div className="  w-full flex-col min-h-full mt-8 lg:mt-12">
    
  
           <div className=" uppercase">
@@ -43,13 +43,14 @@ export default function HeroCon() {
             initial={{ opacity: 0, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
+            className=""
             transition={{ duration: 1, ease: "easeInOut" }}>
-            <p className="mt-8 opacity-80 font-light max-w-lg overflow-visible">2nd hand Vinyl & Listening Café
+            <p className="lg:mt-8 opacity-80 font-light max-w-lg overflow-visible">2nd hand Vinyl & Listening Café
               - Electronic, experimental, funky, punky, jazzy, classy, hard & tasty
               … and more!
             </p>
 
-            <div className="flex items-center gap-2 mt-8">
+            <div className="flex items-center gap-2 my-4 lg:mt-8">
               <p className=" ml-2 flex flex-col">
                 <span className=" opacity-80">- Opening hours</span>
                 Wed-Sat 14-19</p>
@@ -59,7 +60,7 @@ export default function HeroCon() {
                 Tromsø
               </p>
             </div>
-            <div className="ctas mt-20  flex gap-20 mr-auto">
+            <div className="ctas lg:mt-20  flex gap-20 mr-auto">
               <Link href={"/records"} className=" border rounded-full px-8 py-3">
                 Records
               </Link>
@@ -68,7 +69,7 @@ export default function HeroCon() {
               </Link>
             </div>
 
-            <div className="mt-20 flex items-center justify-center">
+            <div className="lg:mt-20 flex items-center justify-center">
               <Image src="/brokkenlogo.png" alt="" width={200} height={200} />
             </div>
 

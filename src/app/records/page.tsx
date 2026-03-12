@@ -2,6 +2,8 @@
 
 import AllRecords from "@/components/AllRecords";
 import CartModal from "@/components/CartModal";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 import { getCartCount, CART_UPDATED_EVENT } from "@/lib/cart";
 import { ArrowLeft, ShoppingBag } from "lucide-react";
 import Link from "next/link";
@@ -38,28 +40,30 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="min-h-screen w-full">
-      <div className="px-8 pt-20">
-        <div className="flex items-center justify-between">
-          <Link href="/" className="">
-            <ArrowLeft />
-          </Link>
-          <button
-            type="button"
-            onClick={() => setCartOpen(true)}
-            className="flex items-center gap-2 rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium hover:bg-gray-50"
-          >
-            <ShoppingBag className="h-4 w-4" />
-            Cart {cartCount > 0 ? `(${cartCount})` : ""}
-          </button>
-        </div>
-        <h1 className="text-3xl font-bold my-8">All records</h1>
+    <div className="min-h-screen w-full flex flex-col">
+      <Navbar />
+      <div className="px-8 pt-20 flex-1">
+        <div className="container max-w-5xl mx-auto">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="cursor-pointer hover:opacity-70 transition-opacity">
+              <ArrowLeft className="w-6 h-6" />
+            </Link>
+            <button
+              type="button"
+              onClick={() => setCartOpen(true)}
+              className="flex items-center gap-2 rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium hover:bg-gray-50 cursor-pointer transition-colors"
+            >
+              <ShoppingBag className="h-4 w-4" />
+              Cart {cartCount > 0 ? `(${cartCount})` : ""}
+            </button>
+          </div>
+          <h1 className="text-3xl font-bold my-8">All records</h1>
 
-        <div className="container">
           <AllRecords />
         </div>
       </div>
 
+      <Footer />
       <CartModal open={cartOpen} onOpenChange={setCartOpen} />
     </div>
   );

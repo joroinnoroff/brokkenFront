@@ -89,11 +89,20 @@ export default function AllRecords() {
 
   if (loading) {
     return (
-      <div className="w-full h-full">
-        <div className="grid lg:grid-cols-2 gap-8 items-center lg:justify-items-center">
+      <div className="w-full">
+        <div className="mb-6 flex flex-wrap gap-2">
+          <div className="h-8 w-16 bg-gray-200 rounded-full animate-pulse" />
+          <div className="h-8 w-20 bg-gray-200 rounded-full animate-pulse" />
+          <div className="h-8 w-24 bg-gray-200 rounded-full animate-pulse" />
+        </div>
+        <div className="relative mb-4 flex items-center gap-2">
+          <div className="h-10 w-64 bg-gray-200 rounded animate-pulse" />
+        </div>
+        <div className="mb-4 h-4 w-8 bg-gray-200 rounded animate-pulse" />
+        <div className="grid lg:grid-cols-2 gap-12 max-w-4xl mx-auto">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="flex items-center gap-12 my-8 animate-pulse">
-              <div className="h-28 w-28 shrink-0 bg-gray-200 rounded" />
+              <div className="h-20 w-20 shrink-0 bg-gray-200 rounded" />
               <div className="flex-1 space-y-2">
                 <div className="h-3 bg-gray-200 rounded w-1/4" />
                 <div className="h-4 bg-gray-200 rounded w-2/3" />
@@ -108,36 +117,35 @@ export default function AllRecords() {
   }
 
   return (
-    <div className="w-full h-full">
-      <GenreFilter
-        records={availableRecords.map((r) => ({ ...r, genre: normalizeGenre(r.genre) }))}
-        selectedGenre={selectedGenre}
-        onGenreChange={setSelectedGenre}
-      />
-
-
-      <div className="relative mb-4 flex items-center gap-2">
-        <input
-          type="text"
-          placeholder="Search records..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="rounded border border-gray-300 px-3 py-2 text-sm w-64 focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+    <div className="w-full">
+      <div className="flex flex-wrap items-center gap-4 mb-6">
+        <GenreFilter
+          records={availableRecords.map((r) => ({ ...r, genre: normalizeGenre(r.genre) }))}
+          selectedGenre={selectedGenre}
+          onGenreChange={setSelectedGenre}
         />
-        {searchTerm && (
-          <button
-            type="button"
-            onClick={() => setSearchTerm("")}
-            className="rounded-full p-1.5 text-gray-500 hover:bg-gray-200 hover:text-gray-700"
-            aria-label="Clear search"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        )}
+        <div className="relative flex items-center gap-2">
+          <input
+            type="text"
+            placeholder="Search records..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="rounded border border-gray-300 px-3 py-2 text-sm w-64 focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+          />
+          {searchTerm && (
+            <button
+              type="button"
+              onClick={() => setSearchTerm("")}
+              className="rounded-full p-1.5 text-gray-500 hover:bg-gray-200 hover:text-gray-700 cursor-pointer transition-colors"
+              aria-label="Clear search"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+        <span className="text-sm text-gray-500">({displayedRecords.length})</span>
       </div>
-
-      <span>({displayedRecords.length})</span>
-      <div className="grid lg:grid-cols-2 items-center lg:justify-items-center max-w-4xl mx-auto gap-12">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 items-center lg:justify-items-center w-full mx-auto gap-12">
         {displayedRecords.map((record, index) => {
           const inCart = record.id != null && cartIds.has(record.id);
           const imgSrc = record.image?.[0] ? resolveImageUrl(record.image[0]) : "";
@@ -181,7 +189,7 @@ export default function AllRecords() {
                   <button
                     type="button"
                     onClick={() => setDescriptionRecord(record)}
-                    className={`shrink-0 rounded-full p-1.5 transition-colors ${
+                    className={`shrink-0 rounded-full p-1.5 transition-colors cursor-pointer ${
                       record.description?.trim()
                         ? "text-gray-700 hover:bg-gray-200"
                         : "text-gray-400 hover:bg-gray-100"
@@ -193,7 +201,7 @@ export default function AllRecords() {
                 </div>
                 <p className="mt-2 px-2">{formatPrice(record.price)}</p>
                 <button
-                  className="mt-2 rounded bg-black px-4 py-2 text-xs font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  className="mt-2 rounded bg-black px-4 py-2 text-xs font-medium text-white disabled:cursor-not-allowed disabled:opacity-50 hover:opacity-90 transition-opacity cursor-pointer"
                   onClick={() => handleAddToCart(record)}
                   disabled={inCart}
                 >

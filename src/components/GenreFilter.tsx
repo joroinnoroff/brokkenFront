@@ -20,12 +20,14 @@ export default function GenreFilter({
   if (genres.length === 0) return null;
 
   return (
-    <div className="mb-6 flex flex-wrap items-center gap-2">
-      <span className="text-sm text-gray-500">Filter by genre:</span>
+    <div className="mb-6 ">
+      <span className="text-sm text-gray-500 mb-2">Filter by genre:</span>
+
+      <div className="flex flex-wrap items-center gap-2">
       <button
         type="button"
         onClick={() => onGenreChange("")}
-        className={`rounded-full px-3 py-1 text-sm ${
+        className={`rounded-full px-3 py-1 text-sm cursor-pointer transition-colors ${
           selectedGenre === ""
             ? "bg-black text-white"
             : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -38,7 +40,7 @@ export default function GenreFilter({
           key={genre}
           type="button"
           onClick={() => onGenreChange(genre)}
-          className={`rounded-full px-3 py-1 text-sm cursor-pointer ${
+          className={`rounded-full px-3 py-1 text-sm cursor-pointer transition-colors ${
             selectedGenre === genre
               ? "bg-black text-white"
               : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -47,6 +49,8 @@ export default function GenreFilter({
           {genre}
         </button>
       ))}
+      </div>
+      
     </div>
   );
 }
