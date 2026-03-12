@@ -50,13 +50,13 @@ export default function Navbar() {
             </Link>
 
 
-           <div className="links flex lg:flex-col flex-row my-5 gap-8 lg:gap-4">
+           <div className="links flex lg:flex-col flex-row my-5 gap-5 lg:gap-4">
             {links.filter(link => link.label !== "Terms")
                 .map((link, idx) => (
                     <Link
                       href={link.href}
                       key={idx}
-                      className={`flex items-center gap-2 rounded-md px-3 py-1.5 cursor-pointer transition-colors ${
+                      className={`flex items-center gap-2 rounded-md px-3 py-1.5 cursor-pointer transition-colors text-xs lg:text-lg ${
                         active === idx
                           ? "bg-primary/10 text-primary"
                           : "text-gray-500 hover:bg-gray-100 hover:text-primary"
