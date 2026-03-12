@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,6 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Image from "next/image";
+import { Camera, Upload } from "lucide-react";
 import { resolveImageUrl } from "@/lib/utils";
 
 type Availability = "Available" | "Sold";
@@ -28,6 +29,7 @@ interface AddRecordProps {
 }
 
 export default function AddRecord({ onSubmit }: AddRecordProps) {
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [formData, setFormData] = useState<RecordData>({
     name: "",
     image: [],
@@ -39,17 +41,18 @@ export default function AddRecord({ onSubmit }: AddRecordProps) {
   });
   const [genreInput, setGenreInput] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: name === "price" ? Number(value) : value }));
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files?.length) return;
-    const file = e.target.files[0];
+  const uploadFile = async (file: File) => {
     setUploading(true);
-
     const form = new FormData();
     form.append("file", file);
 
@@ -69,6 +72,64 @@ export default function AddRecord({ onSubmit }: AddRecordProps) {
     }
   };
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.length) return;
+    await uploadFile(e.target.files[0]);
+    e.target.value = "";
+  };
+
+  const startCamera = async () => {
+    setCameraError(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: "environment" } },
+      });
+      streamRef.current = stream;
+      setCameraOpen(true);
+    } catch (err) {
+      console.error(err);
+      setCameraError("Could not access camera. Check permissions or try uploading instead.");
+    }
+  };
+
+  const stopCamera = () => {
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
+    setCameraOpen(false);
+    setCameraError(null);
+  };
+
+  useEffect(() => {
+    if (!cameraOpen || !videoRef.current || !streamRef.current) return;
+    videoRef.current.srcObject = streamRef.current;
+    videoRef.current.play().catch(console.error);
+    return () => {
+      streamRef.current?.getTracks().forEach((t) => t.stop());
+    };
+  }, [cameraOpen]);
+
+  const capturePhoto = async () => {
+    const video = videoRef.current;
+    if (!video || !video.srcObject || !video.videoWidth) return;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.drawImage(video, 0, 0);
+
+    canvas.toBlob(
+      async (blob) => {
+        if (!blob) return;
+        stopCamera();
+        await uploadFile(new File([blob], "capture.jpg", { type: "image/jpeg" }));
+      },
+      "image/jpeg",
+      0.9
+    );
+  };
+
   const handleSubmit = () => {
     if (!formData.image?.length) {
       alert("Please upload an image first!");
@@ -80,14 +141,20 @@ export default function AddRecord({ onSubmit }: AddRecordProps) {
     onSubmit({ ...formData, genre, availability: formData.availability ?? "Available" });
     setFormData({ name: "", image: [], release_date: "", price: 0, description: "", genre: [], availability: "Available" });
     setGenreInput("");
+    setDialogOpen(false);
   };
 
   const inputClass =
     "w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black";
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open) stopCamera();
+    setDialogOpen(open);
+  };
+
   return (
-    <Dialog>
-      <DialogTrigger className="rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium hover:bg-gray-50">
+    <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
+      <DialogTrigger className="rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium hover:bg-gray-50 cursor-pointer">
         Create new record
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
@@ -110,11 +177,57 @@ export default function AddRecord({ onSubmit }: AddRecordProps) {
 
           <div>
             <label className="mb-1 block text-sm font-medium">Image</label>
-            <input
-              type="file"
-              onChange={handleFileChange}
-              className="w-full text-sm file:mr-2 file:rounded file:border-0 file:bg-black file:px-3 file:py-1.5 file:text-white file:text-sm"
-            />
+            <div className="flex gap-2 mb-2">
+              <label className="flex items-center gap-2 rounded border border-gray-300 bg-white px-3 py-2 text-sm font-medium hover:bg-gray-50 cursor-pointer">
+                <Upload className="h-4 w-4" />
+                Upload
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={startCamera}
+                disabled={uploading}
+                className="flex items-center gap-2 rounded border border-gray-300 bg-white px-3 py-2 text-sm font-medium hover:bg-gray-50 cursor-pointer disabled:opacity-50"
+              >
+                <Camera className="h-4 w-4" />
+                Take photo
+              </button>
+            </div>
+            {cameraError && (
+              <p className="text-sm text-red-500 mb-2">{cameraError}</p>
+            )}
+            {cameraOpen && (
+              <div className="mb-4 p-4 rounded-lg border border-gray-200 bg-gray-50">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full max-h-48 rounded object-cover"
+                />
+                <div className="flex gap-2 mt-2">
+                  <button
+                    type="button"
+                    onClick={capturePhoto}
+                    className="rounded bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 cursor-pointer"
+                  >
+                    Capture
+                  </button>
+                  <button
+                    type="button"
+                    onClick={stopCamera}
+                    className="rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium hover:bg-gray-50 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
             {uploading && <p className="mt-1 text-sm text-gray-500">Uploading...</p>}
             {formData.image?.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-3">
